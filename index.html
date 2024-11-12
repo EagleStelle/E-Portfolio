@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name - Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header>
+        <nav>
+            <div class="nav-logo">
+                <img src="assets/logo.png" alt="Logo">
+                <h1>Valentino Pasno</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#achievements">Achievements</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#education">Education</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="about-content">
+            <!-- Left Column -->
+            <div class="about-left">
+                <img src="assets/me.png" alt="Your Photo" class="about-photo">
+                <h2>Valentino Pasno</h2>
+                <h3>Computer Engineering Student</h3>
+                <div class="contact-info">
+                    <p><i class="fas fa-envelope"></i>your-email@example.com</p>
+                    <p><i class="fas fa-phone"></i>(123) 456-7890</p>
+                    <p><i class="fab fa-github"></i><a href="https://github.com/EagleStelle">EagleStelle</a></p>
+                    <p><i class="fab fa-linkedin"></i><a href="https://linkedin.com/in/your-username">Valentino Pasno</a></p>
+                </div>                            
+                <a href="#contact" class="cta-button">Contact Me</a>
+            </div>            
+
+            <!-- Right Column -->
+            <div class="about-right">
+                <p>I am a passionate programmer who enjoys creating useful and user-friendly applications. With experience in building Windows desktop software and cross-platform mobile apps, I focus on solving problems efficiently and making a meaningful impact. I am eager to work on exciting projects and continue growing in a collaborative environment.</p>
+                <div class="interactive-lists">
+                    <div class="skills-list">
+                        <h3>What I'm Good At</h3>
+                        <ul>
+                            <li>Building User-Friendly Apps</li>
+                            <li>Developing Desktop Software</li>
+                            <li>Cross-Platform Development</li>
+                            <li>Version Control (Git/GitHub)</li>
+                            <li>Debugging & Optimization</li>
+                        </ul>
+                    </div>
+                    <div class="programming-languages">
+                        <h3>What I Code In</h3>
+                        <ul>
+                            <li>C#</li>
+                            <li>Flutter/Dart</li>
+                            <li>Python</li>
+                            <li>C++</li>
+                            <li>HTML & CSS</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects">
+        <h2>My Projects</h2>
+        <div class="card-grid">
+            <div class="card-item">
+                <img src="project1.jpg" alt="Project Image">
+                <h3>Project Title</h3>
+                <p>Brief description of the project. It explains what the project is about and the technologies used.</p>
+                <a href="project-link.html" class="card-link">View Project</a>
+            </div>
+            <!-- Repeat .card-item for more projects -->
+        </div>
+    </section>
+
+    <!-- Achievements/Certifications Section -->
+    <section id="achievements">
+        <h2>Achievements & Certifications</h2>
+        <div class="card-grid">
+            <div class="card-item">
+                <img src="achievement1.jpg" alt="Certificate Image">
+                <h3>Certification Title</h3>
+                <p>Brief description of the certification or achievement.</p>
+                <a href="certification-link.html" class="card-link">View Certificate</a>
+            </div>
+            
+            <!-- Repeat .card-item for more achievements -->
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience">
+        <h2>Experience</h2>
+        <div class="experience-stack">
+            <div class="experience-card">
+                <h3>Job Title</h3>
+                <p><strong>Company:</strong> Company Name</p>
+                <p><strong>Year:</strong> Year - Year</p>
+                <p class="experience-details">Expanded details about the role, responsibilities, and skills gained.</p>
+            </div>
+            <!-- Repeat .experience-card divs for more experiences -->
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education">
+        <h2>Education</h2>
+        <div class="education-stack">
+            <div class="education-card">
+                <h3>Degree</h3>
+                <p><strong>Institution:</strong> Institution Name</p>
+                <p><strong>Year:</strong> Year - Year</p>
+                <p class="education-details">Expanded details about the coursework, projects, and achievements during studies.</p>
+            </div>
+            <!-- Repeat .education-card divs for more education entries -->
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <h2>Contact Me</h2>
+        <p>If you'd like to reach out, feel free to send me a message below!</p>
+        <form action="submit_form.php" method="post">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Your Name. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
