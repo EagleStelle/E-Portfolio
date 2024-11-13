@@ -7,16 +7,17 @@
 
 /* General Styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     line-height: 1.6;
-    background: #0d1b2a; /* Deep blue for the background */
+    background: #0d1b2a; 
 }
 section {
     max-width: 1200px;
     margin: 0 auto;
     padding: 50px 20px;
-    background-color: #1b263b; /* Darker blue for section backgrounds */
-    color: #e0e1dd; /* Light gray for text */
+    background-color: #1b263b; 
+    color: #e0e1dd;
+    scroll-margin-top: 60px;
 }
 h2 {
     font-size: 36px;
@@ -25,7 +26,7 @@ h2 {
 
 /* Navbar */
 header {
-    background: #415a77; /* Muted blue for the navbar */
+    background: #415a77;
     padding: 10px 20px;
     position: sticky;
     top: 0;
@@ -43,32 +44,62 @@ nav {
     display: flex;
     align-items: center;
     gap: 10px;
+    color: #e0e1dd; 
+    font-size: 1rem;
+    text-decoration: none;
 }
 .nav-logo img {
     width: 40px;
     height: 40px;
     border-radius: 50%;
 }
-.nav-logo h1 {
-    color: #e0e1dd; /* Light gray for logo text */
-    font-size: 1.5rem;
-    text-decoration: none;
-}
+
 .nav-links {
     list-style: none;
     display: flex;
 }
+
 .nav-links li {
-    margin: 0 10px;
+    margin: 0 3px;
+    position: relative;
+    text-align: center;
+    transition: background-color 0.3s;
 }
+
 .nav-links a {
-    color: #f4d35e; /* Golden yellow for links */
+    color: #fdfdfd;
     text-decoration: none;
+    font-size: 16px;
+    display: inline-block;
+    width: 100%;
+    min-width: 120px;
+    padding: 10px;
     transition: color 0.3s;
+    border-radius: 3px;
 }
+
 .nav-links a:hover {
-    color: #ffd166; /* Brighter yellow for hover effect */
+    color: #000;
+    background-color: #ffd166;
 }
+
+.nav-links li.active::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 4px;
+    background-color: #ffd166;
+    font-weight: bold;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border-radius: 3px;
+}
+
+.nav-links li.active a {
+    font-weight: bold;
+}
+
 
 /* About Section */
 #about {
@@ -79,7 +110,7 @@ nav {
 .about-content {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Vertically center left and right columns */
+    align-items: center;
     gap: 20px;
     max-width: 1200px;
     margin: 0 auto;
@@ -103,45 +134,6 @@ nav {
     font-size: 18px;
 }
 
-.about-left .separator {
-    width: 80%;
-    height: 1px;
-    background-color: rgba(207, 216, 220, 0.5);
-    margin: 15px auto; /* Centering the separator */
-}
-
-.about-left .contact-info {
-    width: 40%;  
-    margin: 2vh auto;
-    text-align: left; 
-    font-size: 16px;
-}
-
-.about-left .contact-info a, .contact-info p  {
-    color: #e9e1c3;
-    text-decoration: none;
-}
-
-.about-left .contact-info i {
-    color: #e9e1c3;
-    margin-right: 8px; 
-    font-size: 1.1em;
-}
-
-.about-left .cta-button {
-    padding: 10px 20px;
-    background-color: #003366; /* Dark blue */
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.about-left .cta-button:hover {
-    background-color: #FFCC00; /* Yellow */
-    color: #000; /* Black */
-}
-
 .about-photo {
     width: 330px;
     height: 330px;
@@ -149,8 +141,65 @@ nav {
     border-radius: 50%;
     margin: 0;
     border: 5px solid #00688b;
-    outline: 5px solid #f4d35e;
+    outline: 5px solid #ffd166;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.about-left .info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 20px;
+}
+
+.about-left .contact {
+    text-align: left;
+    font-size: 16px;
+}
+
+.about-left .contact a, 
+.about-left .contact p {
+    color: #e9e1c3;
+    text-decoration: none;
+}
+
+.about-left .contact i {
+    color: #e9e1c3;
+    margin-right: 10px; 
+    font-size: 1.1em;
+}
+
+.about-left .btns {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.about-left .download-btn,
+.about-left .cta-btn {
+    width: 100%;
+    text-align: center;
+    padding: 1.5vh;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: transform 0.3s, background-color 0.3s, color 0.3s;
+}
+
+.about-left .download-btn:hover,
+.about-left .cta-btn:hover {
+    background-color: #ffd166;
+    color: black; 
+    transform: scale(1.05); 
+}
+
+.about-left .download-btn {
+    background-color: #003366; /* Dark blue */
+}
+
+.about-left .cta-btn {
+    background-color: #004080; /* Slightly lighter blue */
 }
 
 /* Interactive Lists (Skills & Programming Languages) */
@@ -186,11 +235,11 @@ nav {
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
-    transition: transform 0.3s, background 0.3s;
+    transition: transform 0.3s, background 0.3s, color 0.3s;
 }
 
 .interactive-lists li:hover {
-    background: #ffcc00;
+    background: #ffd166;
     color: #000;
     transform: scale(1.05);
 }
