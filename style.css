@@ -23,6 +23,11 @@ h2 {
     font-size: 36px;
     text-align: center;
 }
+.line-break {
+    display: block;
+    margin-top: 8px;
+}
+
 
 /* Navbar */
 header {
@@ -195,33 +200,36 @@ nav {
 }
 
 .about-left .download-btn {
-    background-color: #003366; /* Dark blue */
+    background-color: #003366;
 }
 
 .about-left .cta-btn {
-    background-color: #004080; /* Slightly lighter blue */
+    background-color: #004080;
 }
 
 /* Interactive Lists (Skills & Programming Languages) */
-.interactive-lists {
+.about-right p {
+    font-size: 18px;
+}
+.about-right .interactive-lists {
     display: flex;
     justify-content: space-between;
     gap: 20px;
     margin-top: 20px;
 }
 
-.interactive-lists div {
+.about-right .interactive-lists div {
     flex: 1;
     text-align: left;
     text-align: center;
 }
 
-.interactive-lists h3 {
+.about-right .interactive-lists h3 {
     font-size: 20px;
     margin-bottom: 10px;
 }
 
-.interactive-lists ul {
+.about-right .interactive-lists ul {
     list-style: none;
     padding: 0;
     display: flex;
@@ -229,7 +237,7 @@ nav {
     gap: 10px;
 }
 
-.interactive-lists li {
+.about-right .interactive-lists li {
     background: #00688b;
     color: #fff;
     padding: 10px 15px;
@@ -238,29 +246,10 @@ nav {
     transition: transform 0.3s, background 0.3s, color 0.3s;
 }
 
-.interactive-lists li:hover {
+.about-right .interactive-lists li:hover {
     background: #ffd166;
     color: #000;
     transform: scale(1.05);
-}
-
-/* Skills Section */
-#skills {
-    padding: 50px 20px;
-    text-align: center;
-}
-#skills ul {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-}
-#skills li {
-    background: #f4f4f4;
-    padding: 10px 15px;
-    border-radius: 5px;
-    font-size: 16px;
 }
 
 /* Card Grid (for Projects and Achievements) */
