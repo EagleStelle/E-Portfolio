@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valentino Pasno</title>
+    <link rel="icon" href="assets/logo.png" type="image/png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -89,11 +90,20 @@
     <section id="projects">
         <h2>My Projects</h2>
         <div class="card-grid">
-            <div class="card-item">
-                <img src="project1.jpg" alt="Project Image">
-                <h3>Project Title</h3>
-                <p>Brief description of the project. It explains what the project is about and the technologies used.</p>
-                <a href="project-link.html" class="card-link">View Project</a>
+            <div class="card-grid">
+                <div class="card-item" data-tech="HTML, CSS, JavaScript">
+                    <img src="assets/project1.jpg" alt="Project Image">
+                    <h3>Project Title</h3>
+                    <p>Brief description of the project. It explains what the project is about and the technologies used.</p>
+                    <div class="tech-stack">
+                        <div class="tech-item"><i class="fab fa-html5"></i> HTML</div>
+                        <div class="tech-item"><i class="fab fa-css3-alt"></i> CSS</div>
+                        <div class="tech-item"><i class="fab fa-js-square"></i> JavaScript</div>
+                        <div class="tech-item"><i class="fab fa-js-square"></i> JavaScript</div>
+                    </div>
+                    <a href="project-link.html" class="card-link">View Project</a>
+                </div>
+                <!-- Repeat .card-item for more projects -->
             </div>
             <!-- Repeat .card-item for more projects -->
         </div>
@@ -109,7 +119,6 @@
                 <p>Brief description of the certification or achievement.</p>
                 <a href="certification-link.html" class="card-link">View Certificate</a>
             </div>
-            
             <!-- Repeat .card-item for more achievements -->
         </div>
     </section>

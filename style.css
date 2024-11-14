@@ -25,19 +25,20 @@ h2 {
 }
 .line-break {
     display: block;
-    margin-top: 8px;
+    margin-top: 16px;
 }
 
 
 /* Navbar */
 header {
-    background: #415a77;
+    background: #1e3a5f;
     padding: 10px 20px;
     position: sticky;
     top: 0;
     z-index: 1000;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
 nav {
     max-width: 1200px;
     margin: 0 auto;
@@ -45,6 +46,7 @@ nav {
     justify-content: space-between;
     align-items: center;
 }
+
 .nav-logo {
     display: flex;
     align-items: center;
@@ -53,6 +55,7 @@ nav {
     font-size: 1rem;
     text-decoration: none;
 }
+
 .nav-logo img {
     width: 40px;
     height: 40px;
@@ -84,7 +87,7 @@ nav {
 }
 
 .nav-links a:hover {
-    color: #000;
+    color: #1e3a5f;
     background-color: #ffd166;
 }
 
@@ -239,7 +242,7 @@ nav {
 
 .about-right .interactive-lists li {
     background: #00688b;
-    color: #fff;
+    color: white;
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
@@ -257,27 +260,34 @@ nav {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
-    padding: 0 5vw;
     justify-items: center;
+    align-items: start;
 }
 
 .card-item {
-    background: #fff;
+    background: #29425c;
+    color: #e0e1dd;
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     width: 100%;
-    max-width: 300px;
+    max-width: 350px;
+    min-height: 550px; /* Set minimum height */
+    transition: transform 0.3s, background-color 0.3s, color 0.3s;
+}
+
+.card-item:hover {
+    transform: scale(1.05);
 }
 
 .card-item img {
     width: 100%;
-    aspect-ratio: 1;
-    object-fit: cover;
+    aspect-ratio: 16 / 9;
+    object-fit: cover; 
     border-radius: 5px;
 }
 
@@ -293,14 +303,48 @@ nav {
     margin: 15px 0;
 }
 
+.tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: auto;
+    padding-top: 10px;
+    width: 100%;
+}
+
+.tech-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #ffd166;
+    padding: 5px 10px;
+    background-color: #003366;
+    border-radius: 3px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.tech-item i {
+    margin-right: 5px;
+    font-size: 1em;
+    color: #ffd166;
+}
+
 .card-link {
     display: inline-block;
-    background: #333;
-    color: #fff;
+    background: #004080;
+    color: white;
     padding: 10px 20px;
     text-decoration: none;
     border-radius: 5px;
-    margin-top: auto;
+    margin-top: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.card-link:hover {
+    background-color: #ffd166;
+    color: #000; 
 }
 
 /* Experience & Education Stacks */
@@ -312,10 +356,11 @@ nav {
 }
 
 .experience-card, .education-card {
-    background: #fff;
+    background: #29425c; /* Lighter than the section background (#1b263b) */
+    color: #e0e1dd; /* Text color for readability */
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Light shadow for elevation */
     transition: transform 0.3s, box-shadow 0.3s;
     width: 100%;
 }
@@ -328,7 +373,7 @@ nav {
 /* Details (Initially Hidden, Expand on Hover) */
 .experience-details, .education-details {
     margin-top: 10px;
-    color: #666;
+    color: #e0e1dd;
     display: none;
 }
 
@@ -363,19 +408,8 @@ button {
 
 /* Footer */
 footer {
-    background: #415a77;
+    background: #1e3a5f;
+    color: #e0e1dd; 
     text-align: center;
     padding: 10px 20px;
-}
-
-/* Fade-in Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
