@@ -44,8 +44,6 @@
                 
                 <div class="info">
                     <div class="contact">
-                        <p><i class="fas fa-envelope"></i>**************@******.***</p>
-                        <p><i class="fas fa-phone"></i>(+63) **********</p>
                         <p><i class="fab fa-github"></i> <a href="https://github.com/EagleStelle" target="_blank" rel="noopener noreferrer">EagleStelle</a></p>
                         <p><i class="fab fa-linkedin"></i> <a href="https://www.linkedin.com/in/valentino-pasno-b94965338/" target="_blank" rel="noopener noreferrer">Valentino Pasno</a></p>
                     </div>
@@ -88,50 +86,53 @@
 
     <!-- Projects Section -->
     <section id="projects">
-        <h2>My Projects</h2>
-        <div class="card-grid">
-            <div class="card-grid">
-                <div class="card-item" data-tech="HTML, CSS, JavaScript">
-                    <img src="assets/project1.jpg" alt="Project Image">
-                    <h3>Project Title</h3>
-                    <p>Brief description of the project. It explains what the project is about and the technologies used.</p>
-                    <div class="tech-stack">
-                        <div class="tech-item"><i class="fab fa-html5"></i> HTML</div>
-                        <div class="tech-item"><i class="fab fa-css3-alt"></i> CSS</div>
-                        <div class="tech-item"><i class="fab fa-js-square"></i> JavaScript</div>
-                        <div class="tech-item"><i class="fab fa-js-square"></i> JavaScript</div>
-                    </div>
-                    <a href="project-link.html" class="card-link">View Project</a>
+        <div class="section-heading">
+            <h2>Featured Projects</h2>
+            <p>A showcase of my skills and capabilities through selected works.</p>
+        </div>
+        <div class="card-grid project">
+            <div class="project-card" data-tech="HTML, CSS, JavaScript">
+                <img src="assets/project1.jpg" alt="Project Image">
+                <h3>Project Title</h3>
+                <p>Brief description of the project.</p>
+                <div class="tech-stack">
+                    <div class="tech-item"><i class="fab fa-html5"></i>HTML</div>
+                    <div class="tech-item"><i class="fab fa-css3-alt"></i>CSS</div>
+                    <div class="tech-item"><i class="fab fa-js-square"></i>JavaScript</div>
                 </div>
-                <!-- Repeat .card-item for more projects -->
+                <a href="project-link.html" class="card-link">View Project</a>
             </div>
-            <!-- Repeat .card-item for more projects -->
         </div>
     </section>
 
     <!-- Achievements/Certifications Section -->
     <section id="achievements">
-        <h2>Achievements & Certifications</h2>
-        <div class="card-grid">
-            <div class="card-item">
-                <img src="achievement1.jpg" alt="Certificate Image">
+        <div class="section-heading">
+            <h2>Featured Certificates</h2>
+            <p>Highlights of my recognized certifications.</p>
+        </div>
+        <div class="card-grid achievement">
+            <div class="achievement-card">
+                <img src="assets/project1.jpg" alt="Certificate Image">
                 <h3>Certification Title</h3>
-                <p>Brief description of the certification or achievement.</p>
-                <a href="certification-link.html" class="card-link">View Certificate</a>
+                <p>Issued Month Year</p>
+                <p class="hidden-description">Brief description of the certification or achievement.</p>
             </div>
-            <!-- Repeat .card-item for more achievements -->
         </div>
     </section>
 
     <!-- Experience Section -->
     <section id="experience">
-        <h2>Experience</h2>
-        <div class="experience-stack">
-            <div class="experience-card">
-                <h3>Job Title</h3>
-                <p><strong>Company:</strong> Company Name</p>
+        <div class="section-heading">
+            <h2>Academic Background</h2>
+            <p>An overview of my academic qualifications and any relevant coursework or training.</p>
+        </div>
+        <div class="stack-container">
+            <div class="stack-item">
+                <h3>Degree</h3>
+                <p><strong>Institution:</strong> Institution Name</p>
                 <p><strong>Year:</strong> Year - Year</p>
-                <p class="experience-details">Expanded details about the role, responsibilities, and skills gained.</p>
+                <p class="details">Expanded details about the coursework, projects, and achievements during studies.</p>
             </div>
             <!-- Repeat .experience-card divs for more experiences -->
         </div>
@@ -139,13 +140,16 @@
 
     <!-- Education Section -->
     <section id="education">
-        <h2>Education</h2>
-        <div class="education-stack">
-            <div class="education-card">
+        <div class="section-heading">
+            <h2>Academic Background</h2>
+            <p>An overview of my academic qualifications and any relevant coursework or training.</p>
+        </div>
+        <div class="stack-container">
+            <div class="stack-item">
                 <h3>Degree</h3>
                 <p><strong>Institution:</strong> Institution Name</p>
                 <p><strong>Year:</strong> Year - Year</p>
-                <p class="education-details">Expanded details about the coursework, projects, and achievements during studies.</p>
+                <p class="details">Expanded details about the coursework, projects, and achievements during studies.</p>
             </div>
             <!-- Repeat .education-card divs for more education entries -->
         </div>
@@ -153,19 +157,33 @@
 
     <!-- Contact Section -->
     <section id="contact">
-        <h2>Contact Me</h2>
-        <p>If you'd like to reach out, feel free to send me a message below!</p>
+        <div class="section-heading">
+            <h2>Contact Me</h2>
+            <p>If you'd like to reach out, feel free to send me a message below!</p>
+        </div>
         <form action="submit_form.php" method="post">
             <input type="text" name="name" placeholder="Your Name" required>
             <input type="email" name="email" placeholder="Your Email" required>
+            <input type="text" placeholder="Company Name (Optional)">
+            <select id="subject" name="subject" required>
+                <option value="" disabled selected>Subject</option>
+                <option value="project_inquiry">Project Inquiry</option>
+                <option value="collaboration">Collaboration</option>
+                <option value="feedback">Feedback</option>
+                <option value="other">Other</option>
+            </select>      
             <textarea name="message" placeholder="Your Message" required></textarea>
             <button type="submit">Send Message</button>
-        </form>
+        </form>        
     </section>
 
     <footer>
-        <p>&copy; 2024 Your Name. All Rights Reserved.</p>
+        <p>&copy; 2024 Valentino Pasno. All Rights Reserved.</p>
     </footer>
-
+    <script>
+        document.getElementById('subject').addEventListener('change', function() {
+            this.style.color = this.value ? '#e0e1dd' : '#aab8c2';
+        });
+    </script>
 </body>
 </html>
