@@ -11,10 +11,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 
-    <script src="script.js" defer></script>
+    <script src="backend/firebase.js" type="module"></script>
+    <script src="backend/firestore.js" type="module"></script>
+
+    <script src="script.js" type="module"></script>
 </head>
 <body>
-
     <!-- Navbar -->
     <header>
         <nav>
@@ -91,8 +93,13 @@
             <p>A showcase of my skills and capabilities through selected works.</p>
         </div>
         <div class="card-grid project">
-            <div class="project-card" data-tech="HTML, CSS, JavaScript">
+            <!-- Example of Project Card -->
+            <div class="project-card">
                 <img src="assets/project1.jpg" alt="Project Image">
+                <div class="card-icons">
+                    <i class="fas fa-edit edit-icon" title="Edit Project"></i>
+                    <i class="fas fa-trash delete-icon" title="Delete Project"></i>
+                </div>
                 <h3>Project Title</h3>
                 <p>Brief description of the project.</p>
                 <div class="tech-stack">
@@ -102,8 +109,36 @@
                 </div>
                 <a href="project-link.html" class="card-link">View Project</a>
             </div>
-        </div>
+        
+            <!-- Add Project Placeholder Card -->
+            <div class="project-card add-project">
+                <i class="fas fa-plus"></i>
+                <h3>Add Project</h3>
+            </div>
+        </div>          
     </section>
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <form id="projectForm">
+                <h2>Edit Project</h2>
+                <input type="hidden" id="projectId" />
+                <input type="hidden" id="isEditMode" />
+                
+                <input type="text" id="projectTitle" placeholder="Project Title" required />
+                
+                <textarea id="projectDescription" placeholder="Brief Description" required></textarea>
+                
+                <input type="url" id="projectImage" placeholder="Image URL" required />
+                
+                <input type="url" id="projectLink" placeholder="Project Link" required />
+                
+                <input type="text" id="projectTech" placeholder="Technologies (comma-separated)" required />
+              
+                <button type="submit">Save</button>
+                <button type="button" class="cancel-btn">Cancel</button>
+              </form>              
+        </div>
+    </div>    
 
     <!-- Achievements/Certifications Section -->
     <section id="achievements">
@@ -112,11 +147,15 @@
             <p>Highlights of my recognized certifications.</p>
         </div>
         <div class="card-grid achievement">
+            <!-- Example of Achievement Card -->
             <div class="achievement-card">
-                <img src="assets/project1.jpg" alt="Certificate Image">
-                <h3>Certification Title</h3>
-                <p>Issued Month Year</p>
-                <p class="hidden-description">Brief description of the certification or achievement.</p>
+                <img src="assets/achievement1.jpg" alt="Achievement Image">
+                <div class="card-icons">
+                    <i class="fas fa-edit edit-icon" title="Edit Achievement"></i>
+                    <i class="fas fa-trash delete-icon" title="Delete Achievement"></i>
+                </div>
+                <h3>Achievement Title</h3>
+                <p class="hidden-description">Brief description of the achievement.</p>
             </div>
         </div>
     </section>
@@ -124,8 +163,8 @@
     <!-- Experience Section -->
     <section id="experience">
         <div class="section-heading">
-            <h2>Academic Background</h2>
-            <p>An overview of my academic qualifications and any relevant coursework or training.</p>
+            <h2>Professional Experience</h2>
+            <p>Overview of my academic qualifications and any relevant coursework or training.</p>
         </div>
         <div class="stack-container">
             <div class="stack-item">
@@ -141,8 +180,8 @@
     <!-- Education Section -->
     <section id="education">
         <div class="section-heading">
-            <h2>Academic Background</h2>
-            <p>An overview of my academic qualifications and any relevant coursework or training.</p>
+            <h2>Professional Experience</h2>
+            <p>Overview of my professional experience, including roles, responsibilities, and achievements.</p>
         </div>
         <div class="stack-container">
             <div class="stack-item">
@@ -180,10 +219,5 @@
     <footer>
         <p>&copy; 2024 Valentino Pasno. All Rights Reserved.</p>
     </footer>
-    <script>
-        document.getElementById('subject').addEventListener('change', function() {
-            this.style.color = this.value ? '#e0e1dd' : '#aab8c2';
-        });
-    </script>
 </body>
 </html>

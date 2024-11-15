@@ -18,3 +18,7 @@ document.addEventListener("scroll", function() {
         }
     });
 });
+
+document.getElementById('subject').addEventListener('change', function() {
+    this.style.color = this.value ? '#e0e1dd' : '#aab8c2';
+});

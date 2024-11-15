@@ -300,6 +300,8 @@ nav {
 
 .project-card,
 .achievement-card {
+    position: relative; /* Required for icons */
+    overflow: hidden; /* To clip icons */
     background: #29425c;
     color: #e0e1dd;
     padding: 20px;
@@ -307,7 +309,6 @@ nav {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
-    width: 100%;
     max-width: 350px;
     transition: transform 0.3s, background-color 0.3s, color 0.3s;
 }
@@ -316,6 +317,36 @@ nav {
 .achievement-card:hover {
     transform: scale(1.02);
     transition: transform 0.3s ease;
+}
+
+.project-card:hover .card-icons,
+.achievement-card:hover .card-icons {
+    opacity: 1;
+}
+
+.card-icons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.card-icons i {
+    font-size: 1.2rem;
+    background-color: #003366;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.card-icons i:hover {
+    background-color: #004080;
+    transform: scale(1.1);
 }
 
 .achievement-card .hidden-description {
@@ -330,6 +361,29 @@ nav {
 .achievement-card:hover .hidden-description {
     max-height: 100px;
     opacity: 1;
+}
+
+/* Add Project Card */
+.add-project {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 2rem;
+    background-color: #1b262c;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.add-project:hover {
+    background-color: #004080;
+    transform: scale(1.05);
+}
+
+.add-project i {
+    font-size: 3rem;
+    color: #ffd166;
 }
 
 .tech-stack {
@@ -396,7 +450,7 @@ nav {
 
 /* Hover effect for each stack item */
 .stack-item:hover {
-    transform: scale(1.02);
+    transform: scale(1.01);
 }
 
 /* Hide details initially */
@@ -475,6 +529,9 @@ button {
     padding: 12px;
     background: #004080;
     color: #e0e1dd;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 16px;
     border: none;
     cursor: pointer;
     border-radius: 5px;
@@ -511,4 +568,58 @@ footer {
 
 ::-webkit-scrollbar-thumb:hover {
     background-color: #ffca3a; /* Slightly darker yellow when hovered */
+}
+
+/* Add Project */
+.add-project {
+    background-color: rgba(30, 143, 255, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    height: 100%;
+    width: 100%;
+    border: 2px dashed rgba(30, 144, 255, 0.4);
+}
+
+.add-project i {
+    font-size: 3rem;
+    transition: color 0.3s, transform 0.3s;
+}
+
+.add-project:hover {
+    background-color: rgba(255, 223, 0, 0.2);
+    border-color: rgba(255, 223, 0, 0.5);
+}
+
+.add-project:hover i {
+    color: #ffdf00;
+    transform: scale(1.2); 
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0; 
+    justify-content: center; 
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #e0e1dd;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.modal-content {
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.cancel-btn {
+    margin-top: 10px;
+    background: #d32f2f; /* Red background */
+    color: #e0e1dd; /* Light text */
 }
