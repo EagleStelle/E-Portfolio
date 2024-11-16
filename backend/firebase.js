@@ -1,6 +1,6 @@
 // Import Firebase modules from the CDN
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -12,9 +12,13 @@ const firebaseConfig = {
     appId: "1:89687914332:web:4a5f97b25aecefd99a7399"
 };
 
-// Initialize Firebase
+// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+console.log("Firebase initialized!");
 
-// Fetch Projects Example
-console.log("Firestore initialized!", db);
+// Initialize Firestore
+const db = getFirestore(app);
+console.log("Firestore initialized!");
+
+// Export the app and Firestore instance
+export { app, db };

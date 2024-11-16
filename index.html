@@ -13,6 +13,7 @@
 
     <script src="backend/firebase.js" type="module"></script>
     <script src="backend/firestore.js" type="module"></script>
+    <script src="backend/admin.js" type="module"></script>    
 
     <script src="script.js" type="module"></script>
 </head>
@@ -149,7 +150,7 @@
         <div class="card-grid achievement">
             <!-- Example of Achievement Card -->
             <div class="achievement-card">
-                <img src="assets/achievement1.jpg" alt="Achievement Image">
+                <img src="" alt="Achievement Image">
                 <div class="card-icons">
                     <i class="fas fa-edit edit-icon" title="Edit Achievement"></i>
                     <i class="fas fa-trash delete-icon" title="Delete Achievement"></i>
@@ -200,19 +201,19 @@
             <h2>Contact Me</h2>
             <p>If you'd like to reach out, feel free to send me a message below!</p>
         </div>
-        <form action="submit_form.php" method="post">
-            <input type="text" name="name" placeholder="Your Name" required>
-            <input type="email" name="email" placeholder="Your Email" required>
-            <input type="text" placeholder="Company Name (Optional)">
+        <form id="contactForm">
+            <input type="text" id="name" name="name" placeholder="Your Name" required>
+            <input type="email" id="email" name="email" placeholder="Your Email" required>
+            <input type="text" id="company" placeholder="Company Name (Optional)">
             <select id="subject" name="subject" required>
                 <option value="" disabled selected>Subject</option>
                 <option value="project_inquiry">Project Inquiry</option>
                 <option value="collaboration">Collaboration</option>
                 <option value="feedback">Feedback</option>
                 <option value="other">Other</option>
-            </select>      
-            <textarea name="message" placeholder="Your Message" required></textarea>
-            <button type="submit">Send Message</button>
+            </select>
+            <textarea id="message" name="message" placeholder="Your Message" required></textarea>
+            <button type="button" id="sendMessageBtn">Send Message</button>
         </form>        
     </section>
 
