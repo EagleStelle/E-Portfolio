@@ -1,6 +1,9 @@
+// firestore.js
+import { db } from "./firebase.js"; // Import Firestore instance
 import {
-  getFirestore,
   collection,
+  query,
+  where,
   getDocs,
   addDoc,
   updateDoc,
@@ -9,15 +12,46 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 // Firestore setup
-const db = getFirestore();
+const adminCollection = collection(db, "admin");
 const projectsCollection = collection(db, "projects");
+
+let adminMode = false;
+
+// Export a function to update admin mode
+export function setAdminMode(isAdmin) {
+  adminMode = isAdmin;
+  fetchProjects(); // Re-render the projects
+}
+
+// Verify admin credentials via Firestore
+export async function verifyCredentials(name, email, secret) {
+  try {
+    const q = query(
+      adminCollection,
+      where("name", "==", name),
+      where("email", "==", email),
+      where("message", "==", secret)
+    );
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      setAdminMode(true); // Enable admin mode if credentials are valid
+      alert("Admin mode enabled!");
+    } else {
+      alert("Invalid admin credentials!");
+    }
+  } catch (error) {
+    console.error("Error verifying admin credentials:", error);
+    alert("An error occurred while verifying credentials. Please try again.");
+  }
+}
 
 // Mapping tech names to Font Awesome icon classes
 const techIcons = {
   HTML: "fa-html5",
   "C#": "fa-code",
-  "C#.NET": "fa-code",
-  "VB.NET": "fa-code",
+  "C# .NET": "fa-code",
+  "Visual Basic .NET": "fa-code",
   PHP: "fa-php",
   JavaScript: "fa-js",
   CSS: "fa-css3-alt",
@@ -28,21 +62,23 @@ const techIcons = {
 // Fetch projects from Firestore and render them
 async function fetchProjects() {
   try {
-    const querySnapshot = await getDocs(projectsCollection);
-    const projectsContainer = document.querySelector(".card-grid.project");
-    projectsContainer.innerHTML = ""; // Clear existing content
+      const querySnapshot = await getDocs(projectsCollection);
+      const projectsContainer = document.querySelector(".card-grid.project");
+      projectsContainer.innerHTML = ""; // Clear existing content
 
-    querySnapshot.forEach((doc) => {
-      const project = { id: doc.id, ...doc.data() };
-      const projectCard = createProjectCard(project);
-      projectsContainer.appendChild(projectCard);
-    });
+      querySnapshot.forEach((doc) => {
+          const project = { id: doc.id, ...doc.data() };
+          const projectCard = createProjectCard(project);
+          projectsContainer.appendChild(projectCard);
+      });
 
-    // Add the "Add Project" card at the end
-    const addProjectCard = createAddProjectCard();
-    projectsContainer.appendChild(addProjectCard);
+      // Add the "Add Project" card only for admins
+      if (adminMode) {
+          const addProjectCard = createAddProjectCard();
+          projectsContainer.appendChild(addProjectCard);
+      }
   } catch (error) {
-    console.error("Error fetching projects:", error);
+      console.error("Error fetching projects:", error);
   }
 }
 
@@ -78,41 +114,42 @@ async function deleteProject(projectId) {
   }
 }
 
-// Create a project card with action icons
+// Create a project card
 function createProjectCard(project) {
   const card = document.createElement("div");
   card.className = "project-card";
   card.innerHTML = `
-    <div class="card-icons">
-      <i class="fas fa-edit edit-icon" title="Edit Project"></i>
-      <i class="fas fa-trash delete-icon" title="Delete Project"></i>
+    <div class="card-icons" style="display: ${adminMode ? "flex" : "none"};">
+        <i class="fas fa-edit edit-icon" title="Edit Project"></i>
+        <i class="fas fa-trash delete-icon" title="Delete Project"></i>
     </div>
     <img src="${project.image}" alt="${project.title}">
     <h3>${project.title}</h3>
     <p>${project.description}</p>
     <div class="tech-stack">
-      ${project.tech
-        .map(
-          (tech) =>
-            `<div class="tech-item"><i class="fab ${
-              techIcons[tech] || "fa-code"
-            }"></i>${tech}</div>`
-        )
-        .join("")}
+        ${project.tech
+          .map(
+            (tech) =>
+              `<div class="tech-item"><i class="fab ${
+                techIcons[tech] || "fa-code"
+              }"></i>${tech}</div>`
+          )
+          .join("")}
     </div>
     <a href="${project.link}" class="card-link" target="_blank">View Project</a>
   `;
 
-  // Add event listeners for edit and delete
-  card.querySelector(".edit-icon").addEventListener("click", () => {
-    openModal("Edit Project", project);
-  });
-
-  card.querySelector(".delete-icon").addEventListener("click", () => {
-    if (confirm("Are you sure you want to delete this project?")) {
-      deleteProject(project.id);
-    }
-  });
+  // Add event listeners
+  if (adminMode) {
+    card.querySelector(".edit-icon").addEventListener("click", () => {
+      openModal("Edit Project", project);
+    });
+    card.querySelector(".delete-icon").addEventListener("click", () => {
+      if (confirm("Are you sure you want to delete this project?")) {
+        deleteProject(project.id);
+      }
+    });
+  }
 
   return card;
 }
