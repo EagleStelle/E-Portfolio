@@ -310,6 +310,7 @@ nav {
     display: flex;
     flex-direction: column;
     max-width: 350px;
+    height: 100%;
     transition: transform 0.3s, background-color 0.3s, color 0.3s;
 }
 
@@ -345,7 +346,8 @@ nav {
 }
 
 .card-icons i:hover {
-    background-color: #004080;
+    background-color: #ffd166;
+    color: #000;
     transform: scale(1.1);
 }
 
@@ -430,7 +432,6 @@ nav {
 }
 
 /* Experience & Education Stacks */
-/* Container and item styling */
 .stack-container {
     display: flex;
     flex-direction: column;
