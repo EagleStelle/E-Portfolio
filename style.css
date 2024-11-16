@@ -21,22 +21,6 @@ section {
     scroll-margin-top: 60px;
 }
 
-.section-heading h2{
-    font-size: 36px;
-    margin: 0 20px;
-}
-
-.section-heading p {
-    font-size: 18px;
-    margin: -10px 20px;
-}
-
-.line-break {
-    display: block;
-    margin-top: 16px;
-}
-
-
 /* Navbar */
 header {
     background: #1e3a5f;
@@ -116,6 +100,108 @@ nav {
     font-weight: bold;
 }
 
+/* Section Heading */
+.section-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0 20px;
+}
+
+.heading-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 100%;
+}
+
+.heading-text h2,
+.heading-text p {
+    margin: 0; /* Reset default margins */
+}
+
+.heading-text h2 {
+    font-size: 36px;
+}
+
+.heading-text p {
+    font-size: 18px;
+    color: var(--text-color-light);
+}
+
+.heading-controls {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background-color: #243447;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+}
+
+.search-box i {
+    font-size: 1rem;
+    margin-right: 0.5rem;
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 1rem;
+    color: var(--text-color);
+    background-color: transparent;
+}
+
+/* Sort Box */
+.sort-box {
+    display: flex;
+    align-items: center;
+    background-color: #243447;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sort-box i {
+    font-size: 1rem;
+    color: var(--icon-color);
+    margin-right: 0.5rem;
+}
+
+.sort-box select {
+    border: none;
+    outline: none;
+    background-color: #243447;
+    font-size: 1rem;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 768px) {
+    .heading-controls {
+        flex: 1 1 100%;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .search-box, 
+    .sort-box {
+        width: 100%;
+    }
+}
+
+.line-break {
+    display: block;
+    margin-top: 16px;
+}
 
 /* About Section */
 #about {
@@ -265,11 +351,12 @@ nav {
 
 /* Card Grid (for Projects and Achievements) */
 .card-grid {
-    display: grid;
-    gap: 3vh;
-    align-items: start;
-    max-width: 1200px;
-    margin: 0 auto;
+    display: grid; /* Enables CSS Grid */
+    gap: 3vh; /* Adds spacing between grid items */
+    align-items: start; /* Ensures cards align at the top and don't stretch */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive column layout */
+    max-width: 1200px; /* Center container size */
+    margin: 0 auto; /* Centers the grid horizontally */
     padding: 20px;
 }
 
@@ -290,28 +377,34 @@ nav {
 
 .card-grid h3 {
     font-size: 20px;
-    margin: 10px 0;
+    margin: 5px 0;
     word-wrap: break-word;
 }
 
-.card-grid p {
+.card-grid .project-description {
     text-align: justify;
+    margin: 5px 0;
 }
 
+.card-grid .project-date {
+    text-align: right;
+    color: #e9e1c3;
+    padding-top: 10px; 
+}
 .project-card,
 .achievement-card {
-    position: relative; /* Required for icons */
-    overflow: hidden; /* To clip icons */
+    display: flex;
+    position: flex;
+    flex-direction: column;
     background: #29425c;
     color: #e0e1dd;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    display: flex;
-    flex-direction: column;
+    transition: transform 0.3s, background-color 0.3s, color 0.3s;
+    overflow: hidden; /* To clip icons */
     max-width: 350px;
     height: 100%;
-    transition: transform 0.3s, background-color 0.3s, color 0.3s;
 }
 
 .project-card:hover,
@@ -351,7 +444,7 @@ nav {
     transform: scale(1.1);
 }
 
-.achievement-card .hidden-description {
+.hidden-description {
     max-height: 0;
     opacity: 0;
     overflow: hidden;
@@ -360,9 +453,11 @@ nav {
     transition: max-height 0.3s ease, opacity 0.3s ease;
 }
 
+.project-card:hover .hidden-description,
 .achievement-card:hover .hidden-description {
     max-height: 100px;
     opacity: 1;
+    margin: 5px 0;
 }
 
 /* Add Project Card */
@@ -390,16 +485,13 @@ nav {
 
 .tech-stack {
     display: flex;
-    flex-wrap: wrap;
     gap: 10px;
-    justify-content: flex-start;
-    margin-top: auto;
+    flex-wrap: wrap; /* Allows items to wrap */
+    margin-top: auto; /* Keeps stack above the date */
     padding-top: 10px;
-    width: 100%;
 }
 
 .tech-item {
-    display: flex;
     align-items: center;
     font-size: 0.9rem;
     color: #e9e1c3;
@@ -408,6 +500,12 @@ nav {
     border-radius: 3px;
     text-align: center;
     cursor: pointer;
+    transition: background-color 0.3s, color 0,3;
+}
+
+.tech-item:hover {
+    background-color: #ffd166; /* Highlight effect */
+    color: #000;
 }
 
 .tech-item i {
@@ -482,7 +580,7 @@ form textarea,
 form select {
     width: 100%;
     padding: 12px;
-    margin: 10px 0;
+    margin: 5px 0;
     background-color: #243447;
     border: 1px solid #3a4b5e;
     border-radius: 5px;
@@ -520,9 +618,9 @@ form textarea {
 input:-webkit-autofill,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
-    background-color: #243447 !important; /* Matches input background */
-    -webkit-text-fill-color: #e0e1dd !important; /* Text color to match theme */
-    transition: background-color 5000s ease-in-out 0s; /* Keep background consistent */
+    background-color: #243447 !important;
+    -webkit-text-fill-color: #e0e1dd !important; 
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 button {
@@ -619,8 +717,9 @@ footer {
     position: relative;
 }
 
+.modal button {
+    margin: 5px 0;
+}
 .cancel-btn {
-    margin-top: 10px;
-    background: #d32f2f; /* Red background */
-    color: #e0e1dd; /* Light text */
+    background: #d32f2f;
 }

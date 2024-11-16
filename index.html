@@ -91,8 +91,26 @@
     <!-- Projects Section -->
     <section id="projects">
         <div class="section-heading">
-            <h2>Featured Projects</h2>
-            <p>A showcase of my skills and capabilities through selected works.</p>
+            <div class="heading-text">
+                <h2>Featured Projects</h2>
+                <p>A showcase of my skills and capabilities through selected works.</p>
+            </div>            
+            <div class="heading-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search projects" aria-label="Search projects">
+                </div>
+                <div class="sort-box">
+                    <i class="fas fa-sort"></i>
+                    <select aria-label="Sort projects">
+                      <option value="default" selected>Default</option>
+                      <option value="nameAsc">Name: A to Z</option>
+                      <option value="nameDesc">Name: Z to A</option>
+                      <option value="dateAsc">Date: Newest First</option>
+                      <option value="dateDesc">Date: Oldest First</option>
+                    </select>
+                </div>                  
+            </div>
         </div>
         <div class="card-grid project">
             <!-- Example of Project Card -->
@@ -104,6 +122,7 @@
                 </div>
                 <h3>Project Title</h3>
                 <p>Brief description of the project.</p>
+                <p>Made in Date Month Year.</p>
                 <div class="tech-stack">
                     <div class="tech-item"><i class="fab fa-html5"></i>HTML</div>
                     <div class="tech-item"><i class="fab fa-css3-alt"></i>CSS</div>
@@ -121,32 +140,38 @@
     </section>
     <div id="projectModal" class="modal">
         <div class="modal-content">
-            <form id="projectForm">
+            <form id="projectForm" autocomplete="off">
                 <h2>Edit Project</h2>
                 <input type="hidden" id="projectId" />
                 <input type="hidden" id="isEditMode" />
                 
-                <input type="text" id="projectTitle" placeholder="Project Title" required />
+                <input type="text" id="projectTitle" placeholder="Project Title" required autocomplete="off" />
                 
-                <textarea id="projectDescription" placeholder="Brief Description" required></textarea>
+                <textarea id="projectDescription" placeholder="Brief Description" required autocomplete="off"></textarea>
                 
-                <input type="url" id="projectImage" placeholder="Image URL" required />
+                <input type="date" id="projectDate" required autocomplete="off" />
+        
+                <input type="url" id="projectImage" placeholder="Image Link" required autocomplete="off" />
                 
-                <input type="url" id="projectLink" placeholder="Project Link" required />
+                <input type="url" id="projectLink" placeholder="Project Link" required autocomplete="off" />
                 
-                <input type="text" id="projectTech" placeholder="Technologies (comma-separated)" required />
-              
+                <input type="text" id="projectTech" placeholder="Technologies (comma-separated)" required autocomplete="off" />
+        
+                <input type="number" id="projectPriority" placeholder="Priority (1-100)" min="1" max="100" required autocomplete="off" />
+                
                 <button type="submit">Save</button>
                 <button type="button" class="cancel-btn">Cancel</button>
-              </form>              
-        </div>
+            </form>              
+        </div>        
     </div>    
 
     <!-- Achievements/Certifications Section -->
     <section id="achievements">
         <div class="section-heading">
-            <h2>Featured Certificates</h2>
-            <p>Highlights of my recognized certifications.</p>
+            <div class="heading-text">
+                <h2>Featured Certificates</h2>
+                <p>Highlights of my recognized certifications.</p>    
+            </div>
         </div>
         <div class="card-grid achievement">
             <!-- Example of Achievement Card -->
@@ -165,8 +190,10 @@
     <!-- Experience Section -->
     <section id="experience">
         <div class="section-heading">
-            <h2>Professional Experience</h2>
-            <p>Overview of my academic qualifications and any relevant coursework or training.</p>
+            <div class="heading-text">
+                <h2>Professional Experience</h2>
+                <p>Overview of my academic qualifications and any relevant coursework or training.</p>    
+            </div>
         </div>
         <div class="stack-container">
             <div class="stack-item">
@@ -182,8 +209,10 @@
     <!-- Education Section -->
     <section id="education">
         <div class="section-heading">
-            <h2>Professional Experience</h2>
-            <p>Overview of my professional experience, including roles, responsibilities, and achievements.</p>
+            <div class="heading-text">
+                <h2>Professional Experience</h2>
+                <p>Overview of my professional experience, including roles, responsibilities, and achievements.</p>    
+            </div>
         </div>
         <div class="stack-container">
             <div class="stack-item">
@@ -199,8 +228,10 @@
     <!-- Contact Section -->
     <section id="contact">
         <div class="section-heading">
-            <h2>Contact Me</h2>
-            <p>If you'd like to reach out, feel free to send me a message below!</p>
+            <div class="heading-text">
+                <h2>Contact Me</h2>
+                <p>If you'd like to reach out, feel free to send me a message below!</p>
+            </div>
         </div>
         <form id="contactForm">
             <input type="text" id="name" name="name" placeholder="Your Name" required>
