@@ -1,7 +1,7 @@
 // project.js
 import { projectsCollection } from "./firestore.js";
 import { isAdminMode, setAdminModeChangeHandler } from "./auth.js"; // Updated import to use auth.js
-import { filter } from "./filter.js";
+import { filter, scroll, attachSearchListener  } from "./filter.js";
 import { 
   getOrdinalSuffix, 
   createCard, 
@@ -17,6 +17,9 @@ import {
 
 // DOM elements (queried once)
 const searchInput = document.querySelector(".search-box input");
+if (searchInput) {
+  attachSearchListener(searchInput);
+}
 const sortSelect = document.querySelector(".sort-box select");
 const projectsContainer = document.querySelector(".card-grid.project");
 
@@ -39,23 +42,24 @@ export async function fetchProjects() {
     const renderProjects = () => {
       const searchTerm = searchInput.value.trim();
       const sortBy = sortSelect.value;
-
+    
       const filteredAndSortedProjects = filter(projects, searchTerm, sortBy);
-
+    
       projectsContainer.innerHTML = ""; // Clear existing cards
       filteredAndSortedProjects.forEach((project) => {
         const projectCard = createProjectCard(project);
         projectsContainer.appendChild(projectCard);
       });
-
+    
       if (isAdminMode()) {
+        // Create and append the "Add Project" card with static icon
         const addProjectCard = createCard({
           className: "add-project",
           onClick: () => openModal("Add Project"),
         });
-        projectsContainer.appendChild(addProjectCard);
+        projectsContainer.appendChild(addProjectCard); // Append to the container
       }
-    };
+    };    
 
     searchInput.addEventListener("input", renderProjects);
     sortSelect.addEventListener("change", renderProjects);
@@ -117,8 +121,8 @@ function createProjectCard(project) {
       )} of ${projectDate.toLocaleString("default", { month: "long" })}, ${projectDate.getFullYear()}`
     : "Date not provided";
 
-  card.innerHTML = `
-    <div class="card-icons" style="display: ${isAdminMode() ? "flex" : "none"};">
+    card.innerHTML = `
+    <div class="card-icons" ${isAdminMode() ? "" : 'style="display: none;"'}>
         <i class="fas fa-edit edit-icon" title="Edit Project"></i>
         <i class="fas fa-trash delete-icon" title="Delete Project"></i>
     </div>
@@ -130,7 +134,7 @@ function createProjectCard(project) {
         ${project.tech
           .map(
             (tech) =>
-              `<div class="tech-item"><i class="fab ${
+              `<div class="tech-item" data-tech="${tech}"><i class="fab ${
                 techIcons[tech] || "fa-regular fa-code"
               }"></i>${tech}</div>`
           )
@@ -138,6 +142,23 @@ function createProjectCard(project) {
     </div>
     <a href="${project.link}" class="card-link" target="_blank">View Project</a>
   `;
+  
+  // Add click event to each tech stack item
+  const techItems = card.querySelectorAll(".tech-item");
+  techItems.forEach((techItem) => {
+    techItem.addEventListener("click", (e) => {
+      const tech = e.currentTarget.dataset.tech;
+      if (searchInput.value === tech) {
+        searchInput.value = ""; // Clear search bar if clicked again
+      } else {
+        searchInput.value = tech; // Set the search bar to the clicked tech
+      }
+      searchInput.dispatchEvent(new Event("input")); // Trigger search
+
+      // Scroll to section's heading
+      scroll("projects");
+    });
+  });
 
   const descriptionElement = card.querySelector(".project-description");
 
