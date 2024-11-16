@@ -1,9 +1,12 @@
 // project.js
 import { projectsCollection } from "./firestore.js";
-import {
-  isAdminMode,
-  setAdminModeChangeHandler,
-} from "./auth.js"; // Updated import to use auth.js
+import { isAdminMode, setAdminModeChangeHandler } from "./auth.js"; // Updated import to use auth.js
+import { filter } from "./filter.js";
+import { 
+  getOrdinalSuffix, 
+  createCard, 
+  techIcons 
+} from "./utility.js"; // Import utilities
 import {
   getDocs,
   addDoc,
@@ -12,37 +15,52 @@ import {
   doc,
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-// Mapping tech names to Font Awesome icon classes
-const techIcons = {
-  HTML: "fa-html5",
-  "C#": "fa-code",
-  "C# .NET": "fa-code",
-  "Visual Basic .NET": "fa-code",
-  PHP: "fa-php",
-  JavaScript: "fa-js",
-  CSS: "fa-css3-alt",
-  Python: "fa-python",
-  Java: "fa-java",
-};
+// DOM elements (queried once)
+const searchInput = document.querySelector(".search-box input");
+const sortSelect = document.querySelector(".sort-box select");
+const projectsContainer = document.querySelector(".card-grid.project");
 
 // Fetch projects from Firestore and render them
 export async function fetchProjects() {
   try {
     const querySnapshot = await getDocs(projectsCollection);
-    const projectsContainer = document.querySelector(".card-grid.project");
-    projectsContainer.innerHTML = ""; // Clear existing content
-
+    let projects = [];
     querySnapshot.forEach((doc) => {
-      const project = { id: doc.id, ...doc.data() };
-      const projectCard = createProjectCard(project);
-      projectsContainer.appendChild(projectCard);
+      projects.push({ id: doc.id, ...doc.data() });
     });
 
-    // Add the "Add Project" card only for admins
-    if (isAdminMode()) {
-      const addProjectCard = createAddProjectCard();
-      projectsContainer.appendChild(addProjectCard);
-    }
+    // Sort projects by priority (default behavior)
+    projects = projects.sort((a, b) => {
+      const priorityA = Number.isFinite(a.priority) ? a.priority : Number.MIN_SAFE_INTEGER;
+      const priorityB = Number.isFinite(b.priority) ? b.priority : Number.MIN_SAFE_INTEGER;
+      return priorityB - priorityA; // Descending order
+    });    
+
+    const renderProjects = () => {
+      const searchTerm = searchInput.value.trim();
+      const sortBy = sortSelect.value;
+
+      const filteredAndSortedProjects = filter(projects, searchTerm, sortBy);
+
+      projectsContainer.innerHTML = ""; // Clear existing cards
+      filteredAndSortedProjects.forEach((project) => {
+        const projectCard = createProjectCard(project);
+        projectsContainer.appendChild(projectCard);
+      });
+
+      if (isAdminMode()) {
+        const addProjectCard = createCard({
+          className: "add-project",
+          onClick: () => openModal("Add Project"),
+        });
+        projectsContainer.appendChild(addProjectCard);
+      }
+    };
+
+    searchInput.addEventListener("input", renderProjects);
+    sortSelect.addEventListener("change", renderProjects);
+
+    renderProjects();
   } catch (error) {
     console.error("Error fetching projects:", error);
   }
@@ -85,27 +103,35 @@ function createProjectCard(project) {
   const card = document.createElement("div");
   card.className = "project-card";
 
-  const description = project.description;
-  const maxDescriptionLength = 100; // Maximum length for truncated description
-  const truncatedDescription = description.length > maxDescriptionLength
-    ? description.substring(0, maxDescriptionLength) + "..."
-    : description;
+  const description = project.description || "";
+  const maxDescriptionLength = 100;
+  const truncatedDescription =
+    description.length > maxDescriptionLength
+      ? description.substring(0, maxDescriptionLength) + "..."
+      : description;
 
-  // Build the card HTML
+  const projectDate = project.date ? new Date(project.date) : null;
+  const formattedDate = projectDate
+    ? `${projectDate.getDate()}${getOrdinalSuffix(
+        projectDate.getDate()
+      )} of ${projectDate.toLocaleString("default", { month: "long" })}, ${projectDate.getFullYear()}`
+    : "Date not provided";
+
   card.innerHTML = `
     <div class="card-icons" style="display: ${isAdminMode() ? "flex" : "none"};">
         <i class="fas fa-edit edit-icon" title="Edit Project"></i>
         <i class="fas fa-trash delete-icon" title="Delete Project"></i>
     </div>
-    <img src="${project.image}" alt="${project.title}">
-    <h3>${project.title}</h3>
+    <img src="${project.image}" alt="${project.title || "Project image"}">
+    <h3>${project.title || "Untitled Project"}</h3>
     <p class="project-description">${truncatedDescription}</p>
+    <p class="project-date">${formattedDate}</p>
     <div class="tech-stack">
         ${project.tech
           .map(
             (tech) =>
               `<div class="tech-item"><i class="fab ${
-                techIcons[tech] || "fa-code"
+                techIcons[tech] || "fa-regular fa-code"
               }"></i>${tech}</div>`
           )
           .join("")}
@@ -115,38 +141,30 @@ function createProjectCard(project) {
 
   const descriptionElement = card.querySelector(".project-description");
 
-  // Apply initial styles for transition effect
-  descriptionElement.style.overflow = "hidden";
-  descriptionElement.style.transition = "max-height 0.3s ease";
-  descriptionElement.style.maxHeight = "6em"; // Approx. height for truncated description
-
   // Handle hover to expand/collapse description
   card.addEventListener("mouseover", () => {
     if (description.length > maxDescriptionLength) {
       descriptionElement.textContent = description;
-      descriptionElement.style.maxHeight = "100em"; // Adjust this based on expected content height
+      descriptionElement.style.maxHeight = "100em";
     }
   });
 
   card.addEventListener("mouseout", (event) => {
-    // Ensure the mouse actually left the card (not just moved between children)
     if (!card.contains(event.relatedTarget)) {
       if (description.length > maxDescriptionLength) {
-        descriptionElement.style.maxHeight = "6em"; // Collapse back to truncated height
-        setTimeout(() => {
-          descriptionElement.textContent = truncatedDescription; // Revert content after transition
-        }, 300); // Match the transition duration
+        descriptionElement.style.maxHeight = "6em";
+        descriptionElement.textContent = truncatedDescription;
       }
     }
   });
 
-  // Add event listeners for admin actions (edit, delete)
+  // Admin actions
   if (isAdminMode()) {
     card.querySelector(".edit-icon").addEventListener("click", () => {
       openModal("Edit Project", project);
     });
     card.querySelector(".delete-icon").addEventListener("click", () => {
-      if (confirm("Are you sure you want to delete this project?")) {
+      if (confirm(`Are you sure you want to delete the project: ${project.title || "this project"}?`)) {
         deleteProject(project.id);
       }
     });
@@ -155,30 +173,20 @@ function createProjectCard(project) {
   return card;
 }
 
-// Create the "Add Project" card
-function createAddProjectCard() {
-  const card = document.createElement("div");
-  card.className = "project-card add-project";
-  card.innerHTML = `<i class="fas fa-plus"></i><h3>Add Project</h3>`;
-  card.addEventListener("click", () => openModal("Add Project"));
-  return card;
-}
-
 // Open modal for adding or editing a project
 function openModal(title, project = null) {
   const modal = document.getElementById("projectModal");
   modal.style.display = "flex";
 
-  const modalTitle = document.querySelector("#projectModal h2");
-  modalTitle.textContent = title;
-
-  // Reset hidden input and form fields for safety
+  document.querySelector("#projectModal h2").textContent = title;
   document.getElementById("projectId").value = project?.id || "";
   document.getElementById("projectTitle").value = project?.title || "";
   document.getElementById("projectDescription").value = project?.description || "";
+  document.getElementById("projectDate").value = project?.date || "";
   document.getElementById("projectImage").value = project?.image || "";
   document.getElementById("projectLink").value = project?.link || "";
   document.getElementById("projectTech").value = project?.tech?.join(", ") || "";
+  document.getElementById("projectPriority").value = project?.priority || 50;
 }
 
 // Close modal
@@ -190,28 +198,28 @@ document.querySelector(".cancel-btn").addEventListener("click", () => {
 document.getElementById("projectForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const projectId = document.getElementById("projectId").value; // Hidden input for ID
+  const projectId = document.getElementById("projectId").value;
   const projectData = {
     title: document.getElementById("projectTitle").value,
     description: document.getElementById("projectDescription").value,
+    date: document.getElementById("projectDate").value,
     image: document.getElementById("projectImage").value,
     link: document.getElementById("projectLink").value,
     tech: document
       .getElementById("projectTech")
       .value.split(",")
       .map((t) => t.trim()),
+    priority: parseInt(document.getElementById("projectPriority").value, 10),
   };
 
   try {
     if (projectId) {
-      // Update existing project
       await updateProject(projectId, projectData);
     } else {
-      // Add new project
       await addProject(projectData);
     }
 
-    document.getElementById("projectModal").style.display = "none"; // Close modal
+    document.getElementById("projectModal").style.display = "none";
   } catch (error) {
     console.error("Error saving project:", error);
   }
