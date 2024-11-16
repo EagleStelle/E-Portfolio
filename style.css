@@ -351,12 +351,13 @@ nav {
 
 /* Card Grid (for Projects and Achievements) */
 .card-grid {
-    display: grid; /* Enables CSS Grid */
-    gap: 3vh; /* Adds spacing between grid items */
-    align-items: start; /* Ensures cards align at the top and don't stretch */
+    display: grid;
+    gap: 3vh;
+    align-items: start;
+    justify-items: center;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive column layout */
-    max-width: 1200px; /* Center container size */
-    margin: 0 auto; /* Centers the grid horizontally */
+    max-width: 1200px; 
+    margin: 0 auto;
     padding: 20px;
 }
 
@@ -393,18 +394,16 @@ nav {
 }
 .project-card,
 .achievement-card {
-    display: flex;
-    position: flex;
-    flex-direction: column;
     background: #29425c;
     color: #e0e1dd;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     transition: transform 0.3s, background-color 0.3s, color 0.3s;
-    overflow: hidden; /* To clip icons */
+    display: flex;
+    position: flex;
+    flex-direction: column;
     max-width: 350px;
-    height: 100%;
 }
 
 .project-card:hover,
@@ -470,6 +469,7 @@ nav {
     font-size: 2rem;
     background-color: #1b262c;
     cursor: pointer;
+    max-width: 350px;
     transition: background-color 0.3s, transform 0.3s;
 }
 
