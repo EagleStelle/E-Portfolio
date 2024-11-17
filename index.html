@@ -122,11 +122,26 @@
                 </div>
                 <h3>Project Title</h3>
                 <p class="project-description">Brief description of the project.</p>
-                <p class="project-date">Made in Date Month Year.</p>
+                <p class="project-date">Made in Date Month Year</p>
                 <div class="tech-stack">
                     <div class="tech-item"><i class="fab fa-html5"></i>HTML</div>
                     <div class="tech-item"><i class="fab fa-css3-alt"></i>CSS</div>
                     <div class="tech-item"><i class="fab fa-js-square"></i>JavaScript</div>
+                </div>
+                <a href="project-link.html" class="card-link">View Project</a>
+            </div>
+            <div class="card-item project">
+                <img src="assets/placeholder.png" alt="Project Image">
+                <div class="card-icons">
+                    <i class="fas fa-edit edit-icon" title="Edit Project"></i>
+                    <i class="fas fa-trash delete-icon" title="Delete Project"></i>
+                </div>
+                <h3>Project Title</h3>
+                <p class="project-description">Brief description of the project.</p>
+                <p class="project-date">Made in Date Month Year</p>
+                <div class="tech-stack">
+                    <div class="tech-item"><i class="fab fa-python"></i>Python</div>
+                    <div class="tech-item"><i class="fab fa-java"></i>Java</div>
                 </div>
                 <a href="project-link.html" class="card-link">View Project</a>
             </div>
@@ -138,7 +153,11 @@
         </div>
         <button id="toggle-projects-btn" class="toggle-btn">
             <i class="fa-solid fa-chevron-down"></i>
-        </button> 
+        </button>
+        <div class="no-results-message project" hidden>
+            <i class="fas fa-info-circle"></i>
+            No Results Found
+        </div>
     </section>
     <div id="projectModal" class="modal">
         <div class="modal-content">
