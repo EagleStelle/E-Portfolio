@@ -28,9 +28,9 @@ export function filter(items, searchTerm, sortBy) {
       case "nameDesc":
         return b.title.localeCompare(a.title);
       case "dateAsc":
-        return new Date(a.date) - new Date(b.date); // Oldest first
+        return new Date(b.date) - new Date(a.date);
       case "dateDesc":
-        return new Date(b.date) - new Date(a.date); // Newest first
+        return new Date(a.date) - new Date(b.date);
       default:
         return 0;
     }
