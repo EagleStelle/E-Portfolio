@@ -103,12 +103,6 @@ function createProjectCard(project) {
   card.className = "card-item project";
 
   const description = project.description || "";
-  const maxDescriptionLength = 100;
-  const truncatedDescription =
-    description.length > maxDescriptionLength
-      ? description.substring(0, maxDescriptionLength) + "..."
-      : description;
-
   const projectDate = project.date ? new Date(project.date) : null;
   const formattedDate = projectDate
     ? `${projectDate.getDate()}${getOrdinalSuffix(
@@ -123,7 +117,7 @@ function createProjectCard(project) {
     </div>
     <img src="${project.image}" alt="${project.title || "Project image"}">
     <h3>${project.title || "Untitled Project"}</h3>
-    <p class="project-description">${truncatedDescription}</p>
+    <p class="project-description">${description}</p>
     <p class="project-date">${formattedDate}</p>
     <div class="tech-stack">
         ${project.tech
@@ -143,30 +137,17 @@ function createProjectCard(project) {
   techItems.forEach((techItem) => {
     techItem.addEventListener("click", (e) => {
       const tech = e.currentTarget.dataset.tech;
-    
+
       // Update search input and re-render projects
       if (searchInput.value === tech) {
         searchInput.value = ""; // Clear the search bar if clicked again
       } else {
         searchInput.value = tech; // Set the search bar to the clicked tech
       }
-    
+
       renderProjects(cachedProjects); // Trigger project rendering
       scroll("projects"); // Scroll to projects section
     });
-  });
-
-  // Expand/collapse description on hover
-  const descriptionElement = card.querySelector(".project-description");
-  card.addEventListener("mouseover", () => {
-    if (description.length > maxDescriptionLength) {
-      descriptionElement.textContent = description;
-    }
-  });
-  card.addEventListener("mouseout", () => {
-    if (description.length > maxDescriptionLength) {
-      descriptionElement.textContent = truncatedDescription;
-    }
   });
 
   // Admin actions
