@@ -5,7 +5,7 @@ import { filter, scroll, attachSearchListener  } from "./filter.js";
 import { 
   getOrdinalSuffix, 
   createCard, 
-  techIcons 
+  techIcons,
 } from "./utility.js"; // Import utilities
 import {
   getDocs,
@@ -37,46 +37,116 @@ export async function fetchProjects() {
       const priorityA = Number.isFinite(a.priority) ? a.priority : Number.MIN_SAFE_INTEGER;
       const priorityB = Number.isFinite(b.priority) ? b.priority : Number.MIN_SAFE_INTEGER;
       return priorityB - priorityA; // Descending order
-    });    
+    });
 
-    const renderProjects = () => {
-      const searchTerm = searchInput.value.trim();
-      const sortBy = sortSelect.value;
-    
-      const filteredAndSortedProjects = filter(projects, searchTerm, sortBy);
-    
-      projectsContainer.innerHTML = ""; // Clear existing cards
-      filteredAndSortedProjects.forEach((project) => {
-        const projectCard = createProjectCard(project);
-        projectsContainer.appendChild(projectCard);
-      });
-    
-      if (isAdminMode()) {
-        // Create and append the "Add Project" card with static icon
-        const addProjectCard = createCard({
-          className: "add-project",
-          onClick: () => openModal("Add Project"),
-        });
-        projectsContainer.appendChild(addProjectCard); // Append to the container
-      }
-    };    
-
-    searchInput.addEventListener("input", renderProjects);
-    sortSelect.addEventListener("change", renderProjects);
-
-    renderProjects();
+    renderProjects(projects); // Render the projects
+    return projects; // Return the projects
   } catch (error) {
     console.error("Error fetching projects:", error);
   }
 }
 
+function renderProjects(projects) {
+  const searchTerm = searchInput.value.trim();
+  const sortBy = sortSelect.value;
+
+  // Determine viewport size
+  const isMobile = window.innerWidth <= 970;
+
+  // Adjust initialVisibleCount based on admin mode and viewport
+  let initialVisibleCount = isMobile ? 4 : 3; // Mobile displays 4 by default
+  if (isAdminMode()) {
+    initialVisibleCount = isMobile ? 3 : 2; // Reserve space for "Add Project" card
+  }
+
+  const filteredAndSortedProjects = filter(projects, searchTerm, sortBy);
+
+  const projectsToShow = filteredAndSortedProjects.slice(0, initialVisibleCount);
+  const projectsHidden = filteredAndSortedProjects.slice(initialVisibleCount);
+
+  projectsContainer.innerHTML = ""; // Clear existing cards
+
+  // Render visible projects
+  projectsToShow.forEach((project) => {
+    const projectCard = createProjectCard(project);
+    projectsContainer.appendChild(projectCard);
+  });
+
+  // Render hidden projects (with `hidden` class)
+  projectsHidden.forEach((project) => {
+    const projectCard = createProjectCard(project);
+    projectCard.classList.add("hidden");
+    projectsContainer.appendChild(projectCard);
+  });
+
+  // Add "Add Project" card for admin mode
+  if (isAdminMode()) {
+    const addProjectCard = createCard({
+      className: "add-project",
+      onClick: () => openModal("Add Project"),
+    });
+    projectsContainer.appendChild(addProjectCard); // Append to the container
+  }
+
+  // Toggle button visibility
+  const toggleBtn = document.getElementById("toggle-projects-btn");
+
+  // Handle toggle logic
+  let expanded = false;
+
+  toggleBtn.addEventListener("click", () => {
+    expanded = !expanded;
+    toggleBtn.innerHTML = expanded 
+      ? '<i class="fa-solid fa-chevron-up"></i>' 
+      : '<i class="fa-solid fa-chevron-down"></i>';
+
+    // Show or hide extra projects
+    const hiddenCards = projectsContainer.querySelectorAll(".project-card.hidden");
+    hiddenCards.forEach((card) => {
+      card.style.display = expanded ? "block" : "none";
+    });
+  });
+
+  // Handle search and sort dynamically
+  searchInput.addEventListener("input", () => {
+    toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+    renderProjects(projects);
+  });
+  sortSelect.addEventListener("change", () => renderProjects(projects));
+
+  // Ensure only initial cards are visible on load
+  const hiddenCards = projectsContainer.querySelectorAll(".project-card.hidden");
+  hiddenCards.forEach((card) => (card.style.display = "none"));
+}
+
+let cachedProjects = []; // Global variable to store fetched projects
+
+// Fetch projects on load and cache them
+fetchProjects().then((projects) => {
+  cachedProjects = projects || []; // Cache the fetched projects
+  window.dispatchEvent(new Event("resize")); // Trigger resize event after initial fetch
+});
+
+// Add event listener to adjust the view on window resize
+window.addEventListener("resize", () => {
+  if (cachedProjects.length) {
+    renderProjects(cachedProjects); // Use cached projects on resize
+  } else {
+    // Refetch projects if cache is empty
+    fetchProjects().then((projects) => {
+      cachedProjects = projects || [];
+    });
+  }
+});
+
 // Add a new project to Firestore
 export async function addProject(projectData) {
   try {
-    await addDoc(projectsCollection, projectData);
-    fetchProjects(); // Re-render the projects
+    await addDoc(projectsCollection, projectData); // Add the new project to Firestore
+    fetchProjects(); // Re-fetch and render projects
   } catch (error) {
     console.error("Error adding project:", error);
+    throw error; // Propagate the error for handling in the caller
   }
 }
 
@@ -207,7 +277,7 @@ function openModal(title, project = null) {
   document.getElementById("projectImage").value = project?.image || "";
   document.getElementById("projectLink").value = project?.link || "";
   document.getElementById("projectTech").value = project?.tech?.join(", ") || "";
-  document.getElementById("projectPriority").value = project?.priority || 50;
+  document.getElementById("projectPriority").value = project?.priority || "";
 }
 
 // Close modal

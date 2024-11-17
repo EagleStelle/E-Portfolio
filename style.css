@@ -14,7 +14,7 @@ body {
 section {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 50px 20px;
+    padding: 20px 20px;
     
     background-color: #1b263b; 
     color: #e0e1dd;
@@ -105,8 +105,7 @@ nav {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: 1rem;
-    padding: 0 20px;
+    gap: 5px;
 }
 
 .heading-text {
@@ -352,13 +351,8 @@ nav {
 /* Card Grid (for Projects and Achievements) */
 .card-grid {
     display: grid;
-    gap: 3vh;
-    align-items: start;
-    justify-items: center;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive column layout */
-    max-width: 1200px; 
-    margin: 0 auto;
-    padding: 20px;
+    gap: 10px;
+    margin: 20px 0;
 }
 
 .card-grid.project {
@@ -397,13 +391,14 @@ nav {
     background: #29425c;
     color: #e0e1dd;
     padding: 20px;
-    border-radius: 5px;
+    box-sizing: border-box;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s, background-color 0.3s, color 0.3s;
+    border-radius: 5px;
+    transition: transform 0.3;
     display: flex;
     position: flex;
     flex-direction: column;
-    max-width: 350px;
+    height: 100%;
 }
 
 .project-card:hover,
@@ -469,7 +464,7 @@ nav {
     font-size: 2rem;
     background-color: #1b262c;
     cursor: pointer;
-    max-width: 350px;
+    height: 100%;
     transition: background-color 0.3s, transform 0.3s;
 }
 
@@ -514,7 +509,7 @@ nav {
 }
 
 .card-link {
-    display: inline-block;
+    display: flex;
     background: #004080;
     color: white;
     padding: 10px 20px;
@@ -529,6 +524,20 @@ nav {
     color: #000; 
 }
 
+.toggle-projects-btn:focus {
+    outline: none;
+}
+  
+/* Adjust button icon for expanded state */
+.toggle-projects-btn.expanded i {
+    transform: rotate(180deg);
+}
+
+/* Hidden button when no need for expansion */
+.toggle-projects-btn.hidden {
+    display: none;
+}
+  
 /* Experience & Education Stacks */
 .stack-container {
     display: flex;
