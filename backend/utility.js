@@ -35,10 +35,29 @@ export const techIcons = {
   JavaScript: "fa-js",
   CSS: "fa-css3-alt",
   Python: "fa-python",
-  "C#": "fa-brands fa-windows",
-  "Visual Basic": "fa-brands fa-windows",
-  ".NET": "fa-brands fa-windows",
-  "WinForms": "fa-brands fa-windows",
-  "WinUI 3": "fa-brands fa-windows",
   Java: "fa-java",
+  "C#": "fa-microsoft",
+  "Visual Basic": "fa-microsoft",
+  ".NET": "fa-microsoft",
+  "WinForms": "fa-microsoft",
+  "WinUI 3": "fa-microsoft",
 };
+
+export function handleNoResults(container, messageElement, hasResults) {
+  if (hasResults) {
+    messageElement.hidden = true;
+    container.style.display = "grid";
+  } else {
+    messageElement.hidden = false;
+    container.style.display = "none";
+  }
+}
+
+export function addPlaceholderCards(container, totalCards, minCards = 3) {
+  const placeholdersNeeded = Math.max(0, minCards - totalCards);
+  for (let i = 0; i < placeholdersNeeded; i++) {
+    const placeholderCard = document.createElement("div");
+    placeholderCard.className = "project-card invisible-card";
+    container.appendChild(placeholderCard);
+  }
+}

@@ -4,7 +4,9 @@ import { filter, debounce, scroll } from "./filter.js";
 import { 
   getOrdinalSuffix, 
   createCard, 
-  techIcons
+  techIcons,
+  handleNoResults, 
+  addPlaceholderCards,
 } from "./utility.js";
 import {
   getDocs,
@@ -56,20 +58,25 @@ function renderProjects(projects) {
 
   // Determine how many projects to show initially
   const isMobile = window.innerWidth <= 970;
-  let initialVisibleCount = isMobile ? 4 : 3; // Default visible projects
-  if (isAdminMode()) initialVisibleCount = isMobile ? 3 : 2;
+  const initialVisibleCount = isAdminMode() ? (isMobile ? 3 : 2) : (isMobile ? 4 : 3);
+  const visibleProjects = expanded ? filteredProjects : filteredProjects.slice(0, initialVisibleCount);
 
-  // Determine projects to display
-  const visibleProjects = expanded
-    ? filteredProjects
-    : filteredProjects.slice(0, initialVisibleCount);
+  const noResultsMessage = document.querySelector(".no-results-message.project");
+  const totalProjects = filteredProjects.length;
 
-  const hiddenProjects = filteredProjects.length > initialVisibleCount;
+  // Handle "No Results Found" and toggle visibility
+  handleNoResults(projectsContainer, noResultsMessage, totalProjects > 0);
+
+  // Exit if no results
+  if (totalProjects === 0) {
+    toggleBtn.style.display = "none";
+    return;
+  }
 
   // Update DOM
   projectsContainer.innerHTML = ""; // Clear existing cards
   visibleProjects.forEach((project) => projectsContainer.appendChild(createProjectCard(project)));
-
+  
   // Admin-only "Add Project" card
   if (isAdminMode()) {
     const addProjectCard = createCard({
@@ -79,8 +86,12 @@ function renderProjects(projects) {
     projectsContainer.appendChild(addProjectCard);
   }
 
+  // Calculate total number of visible cards (including Add Project card)
+  const totalCards = visibleProjects.length + (isAdminMode() ? 1 : 0);
+  addPlaceholderCards(projectsContainer, totalCards);
+
   // Show/hide the toggle button
-  toggleBtn.style.display = hiddenProjects ? "block" : "none";
+  toggleBtn.style.display = totalProjects > initialVisibleCount ? "block" : "none";
   toggleBtn.innerHTML = expanded
     ? '<i class="fa-solid fa-chevron-up"></i>'
     : '<i class="fa-solid fa-chevron-down"></i>';
@@ -89,7 +100,7 @@ function renderProjects(projects) {
 // Create a project card
 function createProjectCard(project) {
   const card = document.createElement("div");
-  card.className = "project-card";
+  card.className = "card-item project";
 
   const description = project.description || "";
   const maxDescriptionLength = 100;
@@ -171,14 +182,24 @@ function createProjectCard(project) {
   return card;
 }
 
-// Add keydown event listener to search input for the Enter key
+// Trigger search when the user presses Enter
 searchInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
-    const searchTerm = searchInput.value.trim();
-    renderProjects(cachedProjects); // Trigger project rendering
-    scroll("projects"); // Scroll to the "projects" section
+    triggerSearch();
   }
 });
+
+// Trigger search when the search input loses focus
+searchInput.addEventListener("blur", () => {
+  triggerSearch();
+});
+
+// Common search trigger function
+function triggerSearch() {
+  const searchTerm = searchInput.value.trim();
+  renderProjects(cachedProjects); // Trigger project rendering
+  scroll("projects"); // Scroll to the "projects" section
+}
 
 // Open project modal
 function openModal(title, project = null) {
