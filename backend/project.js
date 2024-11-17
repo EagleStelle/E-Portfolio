@@ -1,175 +1,89 @@
-// project.js
 import { projectsCollection } from "./firestore.js";
-import { isAdminMode, setAdminModeChangeHandler } from "./auth.js"; // Updated import to use auth.js
-import { filter, scroll, attachSearchListener  } from "./filter.js";
+import { isAdminMode, setAdminModeChangeHandler } from "./auth.js";
+import { filter, debounce, scroll } from "./filter.js";
 import { 
   getOrdinalSuffix, 
   createCard, 
-  techIcons,
-} from "./utility.js"; // Import utilities
+  techIcons
+} from "./utility.js";
 import {
   getDocs,
   addDoc,
   updateDoc,
   deleteDoc,
-  doc,
+  doc
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-// DOM elements (queried once)
+// DOM elements
 const searchInput = document.querySelector(".search-box input");
-if (searchInput) {
-  attachSearchListener(searchInput);
-}
 const sortSelect = document.querySelector(".sort-box select");
+sortSelect.addEventListener("change", () => {
+  renderProjects(cachedProjects); // Re-render projects with the selected sort
+});
 const projectsContainer = document.querySelector(".card-grid.project");
+const toggleBtn = document.getElementById("toggle-projects-btn");
 
-// Fetch projects from Firestore and render them
-export async function fetchProjects() {
+// State variables
+let cachedProjects = []; // Projects fetched from Firestore
+let expanded = false; // Whether hidden projects are visible
+
+// Fetch projects from Firestore
+async function fetchProjects() {
   try {
     const querySnapshot = await getDocs(projectsCollection);
-    let projects = [];
-    querySnapshot.forEach((doc) => {
-      projects.push({ id: doc.id, ...doc.data() });
-    });
+    cachedProjects = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
     // Sort projects by priority (default behavior)
-    projects = projects.sort((a, b) => {
+    cachedProjects.sort((a, b) => {
       const priorityA = Number.isFinite(a.priority) ? a.priority : Number.MIN_SAFE_INTEGER;
       const priorityB = Number.isFinite(b.priority) ? b.priority : Number.MIN_SAFE_INTEGER;
       return priorityB - priorityA; // Descending order
     });
 
-    renderProjects(projects); // Render the projects
-    return projects; // Return the projects
+    renderProjects(cachedProjects);
   } catch (error) {
     console.error("Error fetching projects:", error);
   }
 }
 
+// Render projects
 function renderProjects(projects) {
-  const searchTerm = searchInput.value.trim();
-  const sortBy = sortSelect.value;
+  const searchTerm = searchInput.value.trim(); // Current search term
+  const sortBy = sortSelect.value; // Current sort option (from dropdown)
 
-  // Determine viewport size
+  // Filter and sort projects
+  const filteredProjects = filter(projects, searchTerm, sortBy);
+
+  // Determine how many projects to show initially
   const isMobile = window.innerWidth <= 970;
+  let initialVisibleCount = isMobile ? 4 : 3; // Default visible projects
+  if (isAdminMode()) initialVisibleCount = isMobile ? 3 : 2;
 
-  // Adjust initialVisibleCount based on admin mode and viewport
-  let initialVisibleCount = isMobile ? 4 : 3; // Mobile displays 4 by default
-  if (isAdminMode()) {
-    initialVisibleCount = isMobile ? 3 : 2; // Reserve space for "Add Project" card
-  }
+  // Determine projects to display
+  const visibleProjects = expanded
+    ? filteredProjects
+    : filteredProjects.slice(0, initialVisibleCount);
 
-  const filteredAndSortedProjects = filter(projects, searchTerm, sortBy);
+  const hiddenProjects = filteredProjects.length > initialVisibleCount;
 
-  const projectsToShow = filteredAndSortedProjects.slice(0, initialVisibleCount);
-  const projectsHidden = filteredAndSortedProjects.slice(initialVisibleCount);
-
+  // Update DOM
   projectsContainer.innerHTML = ""; // Clear existing cards
+  visibleProjects.forEach((project) => projectsContainer.appendChild(createProjectCard(project)));
 
-  // Render visible projects
-  projectsToShow.forEach((project) => {
-    const projectCard = createProjectCard(project);
-    projectsContainer.appendChild(projectCard);
-  });
-
-  // Render hidden projects (with `hidden` class)
-  projectsHidden.forEach((project) => {
-    const projectCard = createProjectCard(project);
-    projectCard.classList.add("hidden");
-    projectsContainer.appendChild(projectCard);
-  });
-
-  // Add "Add Project" card for admin mode
+  // Admin-only "Add Project" card
   if (isAdminMode()) {
     const addProjectCard = createCard({
       className: "add-project",
       onClick: () => openModal("Add Project"),
     });
-    projectsContainer.appendChild(addProjectCard); // Append to the container
+    projectsContainer.appendChild(addProjectCard);
   }
 
-  // Toggle button visibility
-  const toggleBtn = document.getElementById("toggle-projects-btn");
-
-  // Handle toggle logic
-  let expanded = false;
-
-  toggleBtn.addEventListener("click", () => {
-    expanded = !expanded;
-    toggleBtn.innerHTML = expanded 
-      ? '<i class="fa-solid fa-chevron-up"></i>' 
-      : '<i class="fa-solid fa-chevron-down"></i>';
-
-    // Show or hide extra projects
-    const hiddenCards = projectsContainer.querySelectorAll(".project-card.hidden");
-    hiddenCards.forEach((card) => {
-      card.style.display = expanded ? "block" : "none";
-    });
-  });
-
-  // Handle search and sort dynamically
-  searchInput.addEventListener("input", () => {
-    toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
-    renderProjects(projects);
-  });
-  sortSelect.addEventListener("change", () => renderProjects(projects));
-
-  // Ensure only initial cards are visible on load
-  const hiddenCards = projectsContainer.querySelectorAll(".project-card.hidden");
-  hiddenCards.forEach((card) => (card.style.display = "none"));
-}
-
-let cachedProjects = []; // Global variable to store fetched projects
-
-// Fetch projects on load and cache them
-fetchProjects().then((projects) => {
-  cachedProjects = projects || []; // Cache the fetched projects
-  window.dispatchEvent(new Event("resize")); // Trigger resize event after initial fetch
-});
-
-// Add event listener to adjust the view on window resize
-window.addEventListener("resize", () => {
-  if (cachedProjects.length) {
-    renderProjects(cachedProjects); // Use cached projects on resize
-  } else {
-    // Refetch projects if cache is empty
-    fetchProjects().then((projects) => {
-      cachedProjects = projects || [];
-    });
-  }
-});
-
-// Add a new project to Firestore
-export async function addProject(projectData) {
-  try {
-    await addDoc(projectsCollection, projectData); // Add the new project to Firestore
-    fetchProjects(); // Re-fetch and render projects
-  } catch (error) {
-    console.error("Error adding project:", error);
-    throw error; // Propagate the error for handling in the caller
-  }
-}
-
-// Update an existing project in Firestore
-export async function updateProject(projectId, updatedData) {
-  try {
-    const projectDoc = doc(projectsCollection, projectId);
-    await updateDoc(projectDoc, updatedData);
-    fetchProjects(); // Re-render the projects
-  } catch (error) {
-    console.error("Error updating project:", error);
-  }
-}
-
-// Delete a project from Firestore
-export async function deleteProject(projectId) {
-  try {
-    const projectDoc = doc(projectsCollection, projectId);
-    await deleteDoc(projectDoc);
-    fetchProjects(); // Re-render the projects
-  } catch (error) {
-    console.error("Error deleting project:", error);
-  }
+  // Show/hide the toggle button
+  toggleBtn.style.display = hiddenProjects ? "block" : "none";
+  toggleBtn.innerHTML = expanded
+    ? '<i class="fa-solid fa-chevron-up"></i>'
+    : '<i class="fa-solid fa-chevron-down"></i>';
 }
 
 // Create a project card
@@ -191,7 +105,7 @@ function createProjectCard(project) {
       )} of ${projectDate.toLocaleString("default", { month: "long" })}, ${projectDate.getFullYear()}`
     : "Date not provided";
 
-    card.innerHTML = `
+  card.innerHTML = `
     <div class="card-icons" ${isAdminMode() ? "" : 'style="display: none;"'}>
         <i class="fas fa-edit edit-icon" title="Edit Project"></i>
         <i class="fas fa-trash delete-icon" title="Delete Project"></i>
@@ -212,50 +126,43 @@ function createProjectCard(project) {
     </div>
     <a href="${project.link}" class="card-link" target="_blank">View Project</a>
   `;
-  
+
   // Add click event to each tech stack item
   const techItems = card.querySelectorAll(".tech-item");
   techItems.forEach((techItem) => {
     techItem.addEventListener("click", (e) => {
       const tech = e.currentTarget.dataset.tech;
+    
+      // Update search input and re-render projects
       if (searchInput.value === tech) {
-        searchInput.value = ""; // Clear search bar if clicked again
+        searchInput.value = ""; // Clear the search bar if clicked again
       } else {
         searchInput.value = tech; // Set the search bar to the clicked tech
       }
-      searchInput.dispatchEvent(new Event("input")); // Trigger search
-
-      // Scroll to section's heading
-      scroll("projects");
+    
+      renderProjects(cachedProjects); // Trigger project rendering
+      scroll("projects"); // Scroll to projects section
     });
   });
 
+  // Expand/collapse description on hover
   const descriptionElement = card.querySelector(".project-description");
-
-  // Handle hover to expand/collapse description
   card.addEventListener("mouseover", () => {
     if (description.length > maxDescriptionLength) {
       descriptionElement.textContent = description;
-      descriptionElement.style.maxHeight = "100em";
     }
   });
-
-  card.addEventListener("mouseout", (event) => {
-    if (!card.contains(event.relatedTarget)) {
-      if (description.length > maxDescriptionLength) {
-        descriptionElement.style.maxHeight = "6em";
-        descriptionElement.textContent = truncatedDescription;
-      }
+  card.addEventListener("mouseout", () => {
+    if (description.length > maxDescriptionLength) {
+      descriptionElement.textContent = truncatedDescription;
     }
   });
 
   // Admin actions
   if (isAdminMode()) {
-    card.querySelector(".edit-icon").addEventListener("click", () => {
-      openModal("Edit Project", project);
-    });
+    card.querySelector(".edit-icon").addEventListener("click", () => openModal("Edit Project", project));
     card.querySelector(".delete-icon").addEventListener("click", () => {
-      if (confirm(`Are you sure you want to delete the project: ${project.title || "this project"}?`)) {
+      if (confirm(`Delete project: ${project.title || "Untitled"}?`)) {
         deleteProject(project.id);
       }
     });
@@ -264,7 +171,16 @@ function createProjectCard(project) {
   return card;
 }
 
-// Open modal for adding or editing a project
+// Add keydown event listener to search input for the Enter key
+searchInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    const searchTerm = searchInput.value.trim();
+    renderProjects(cachedProjects); // Trigger project rendering
+    scroll("projects"); // Scroll to the "projects" section
+  }
+});
+
+// Open project modal
 function openModal(title, project = null) {
   const modal = document.getElementById("projectModal");
   modal.style.display = "flex";
@@ -285,6 +201,41 @@ document.querySelector(".cancel-btn").addEventListener("click", () => {
   document.getElementById("projectModal").style.display = "none";
 });
 
+// Add a new project to Firestore
+export async function addProject(projectData) {
+  try {
+    await addDoc(projectsCollection, projectData); // Add the new project to Firestore
+    await fetchProjects(); // Re-fetch and render projects
+  } catch (error) {
+    console.error("Error adding project:", error);
+    throw error; // Propagate the error for handling in the caller
+  }
+}
+
+// Update an existing project in Firestore
+export async function updateProject(projectId, updatedData) {
+  try {
+    const projectDoc = doc(projectsCollection, projectId);
+    await updateDoc(projectDoc, updatedData); // Update the project in Firestore
+    await fetchProjects(); // Re-fetch and render projects
+  } catch (error) {
+    console.error("Error updating project:", error);
+    throw error; // Propagate the error for handling in the caller
+  }
+}
+
+// Delete a project from Firestore
+export async function deleteProject(projectId) {
+  try {
+    const projectDoc = doc(projectsCollection, projectId);
+    await deleteDoc(projectDoc); // Delete the project in Firestore
+    await fetchProjects(); // Re-fetch and render projects
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    throw error; // Propagate the error for handling in the caller
+  }
+}
+
 // Handle form submission
 document.getElementById("projectForm").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -296,10 +247,7 @@ document.getElementById("projectForm").addEventListener("submit", async (event) 
     date: document.getElementById("projectDate").value,
     image: document.getElementById("projectImage").value,
     link: document.getElementById("projectLink").value,
-    tech: document
-      .getElementById("projectTech")
-      .value.split(",")
-      .map((t) => t.trim()),
+    tech: document.getElementById("projectTech").value.split(",").map((t) => t.trim()),
     priority: parseInt(document.getElementById("projectPriority").value, 10),
   };
 
@@ -311,16 +259,23 @@ document.getElementById("projectForm").addEventListener("submit", async (event) 
     }
 
     document.getElementById("projectModal").style.display = "none";
+    fetchProjects();
   } catch (error) {
     console.error("Error saving project:", error);
   }
 });
 
-// Listen for admin mode changes and re-fetch projects
-setAdminModeChangeHandler((isAdmin) => {
-  console.log(`Admin mode: ${isAdmin ? "Enabled" : "Disabled"}`);
-  fetchProjects();
+// Toggle hidden projects
+toggleBtn.addEventListener("click", () => {
+  expanded = !expanded;
+  renderProjects(cachedProjects);
 });
 
-// Fetch and render projects on page load
+// Handle resize
+window.addEventListener("resize", debounce(() => renderProjects(cachedProjects), 300));
+
+// Listen for admin mode changes
+setAdminModeChangeHandler(() => fetchProjects());
+
+// Fetch and render projects on load
 fetchProjects();
