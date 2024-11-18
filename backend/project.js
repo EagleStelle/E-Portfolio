@@ -29,58 +29,118 @@ let lastVisibleDoc = null; // Track the last fetched document
 
 // State variables
 let cachedProjects = []; // Projects fetched from Firestore
-let expanded = false; // Whether hidden projects are visible
-let allProjectsFetched = false; // Track if all projects are fetched
+const state = {
+  expanded: JSON.parse(localStorage.getItem("expandedState")) || false,
+  allProjectsFetched: JSON.parse(localStorage.getItem("allProjectsFetched")) || false,
+};
 
-// Fetch projects from Firestore
-async function fetchProjects(initialFetch = true, fetchAll = false) {
+// Function to persist state in localStorage
+function saveState(key, value) {
+  state[key] = value;
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+// Function to handle fetching and updating states
+async function ensureAllProjectsFetched() {
+  if (!state.allProjectsFetched) {
+    await fetchMoreProjects();
+    saveState("allProjectsFetched", true);
+  }
+}
+
+// Function to re-render projects based on current filters
+function updateAndRenderProjects() {
+  const searchTerm = searchInput.value.trim();
+  const sortValue = sortSelect.value;
+  const filteredProjects = filter(cachedProjects, searchTerm, sortValue);
+  renderProjects(filteredProjects);
+}
+
+// Utility to check if cache is expired
+function isCacheExpired() {
+  const lastFetchTime = localStorage.getItem("lastFetchTime");
+  if (!lastFetchTime) return true; // No fetch time stored, fetch data
+
+  const oneDayInMilliseconds = 24 * 60 * 60 * 1000; // 1 day
+  const currentTime = Date.now();
+  return currentTime - parseInt(lastFetchTime, 10) > oneDayInMilliseconds;
+}
+
+// Function to update the last fetch time
+function updateLastFetchTime() {
+  localStorage.setItem("lastFetchTime", Date.now().toString());
+}
+
+// Fetch projects from Firestore or Local Storage
+async function fetchProjects() {
   try {
-    if (initialFetch) {
-      // Reset cache and pagination state for the initial fetch
-      cachedProjects = [];
-      lastVisibleDoc = null;
-      allProjectsFetched = false; // Reset the flag for a fresh load
-    }
+      // Check if cache is expired
+      if (isCacheExpired()) {
+          console.log("Cache expired. Fetching fresh data from Firestore...");
 
-    // If all projects are already fetched, skip fetching from Firestore
-    if (allProjectsFetched && !fetchAll) {
+          // Fetch fresh data from Firestore
+          cachedProjects = [];
+          const querySnapshot = await getDocs(
+              query(projectsCollection, orderBy("priority", "desc"))
+          );
+
+          cachedProjects = querySnapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+          }));
+
+          // Save the fetched data to localStorage
+          localStorage.setItem("cachedProjects", JSON.stringify(cachedProjects));
+          updateLastFetchTime(); // Update the fetch timestamp
+      } else {
+          console.log("Using cached data...");
+          // Use cached data if available
+          const cachedData = localStorage.getItem("cachedProjects");
+          if (cachedData) {
+              cachedProjects = JSON.parse(cachedData);
+          }
+      }
+
+      // Render projects
       renderProjects(cachedProjects);
-      return;
-    }
+  } catch (error) {
+      console.error("Error fetching projects:", error);
+  }
+}
 
-    // Adjust the query based on whether fetching all or just a limited number
-    const q = query(
-      projectsCollection,
-      orderBy("priority", "desc"),
-      ...(lastVisibleDoc ? [startAfter(lastVisibleDoc)] : []),
-      ...(fetchAll ? [] : [limit(5)]) // Fetch all if needed, else limit to 5
+async function fetchMoreProjects() {
+  console.log("Fetch Projects Collection")
+  try {
+    const querySnapshot = await getDocs(
+      query(
+        projectsCollection,
+        orderBy("priority", "desc"),
+        startAfter(lastVisibleDoc),
+        // limit(5) * Implementation for future, pagination
+      )
     );
 
-    const querySnapshot = await getDocs(q);
-
     if (!querySnapshot.empty) {
-      // Append fetched projects to cache
       const newProjects = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-      cachedProjects = [...cachedProjects, ...newProjects];
-      lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1]; // Update last visible document
+      newProjects.forEach((project) => {
+        if (!cachedProjects.some((p) => p.id === project.id)) {
+          cachedProjects.push(project);
+        }
+      });
+
+      lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+      // Save updated projects to localStorage
+      localStorage.setItem("cachedProjects", JSON.stringify(cachedProjects));
     } else {
-      allProjectsFetched = true; // Mark that all projects have been fetched
+      saveState("allProjectsFetched", true);
     }
 
-    renderProjects(cachedProjects); // Render projects using the cached data
-  } catch (error) {
-    console.error("Error fetching projects:", error);
-  }
-}
-
-async function fetchMoreProjects() {
-  try {
-    // Fetch all remaining projects when the toggle button is clicked
-    await fetchProjects(false, true);
+    renderProjects(cachedProjects);
   } catch (error) {
     console.error("Error fetching more projects:", error);
   }
@@ -88,16 +148,16 @@ async function fetchMoreProjects() {
 
 // Render projects
 function renderProjects(projects) {
-  const searchTerm = searchInput.value.trim(); // Current search term
-  const sortBy = sortSelect.value; // Current sort option (from dropdown)
+  const searchTerm = searchInput.value.trim();
+  const sortBy = sortSelect.value;
 
-  // Use cached filtered and sorted results to minimize re-fetches
+  // Filter and sort projects
   const filteredProjects = filter(projects, searchTerm, sortBy);
 
-  // Determine the number of projects to display based on device type
+  // Determine how many projects to show
   const isMobile = window.innerWidth <= 970;
   const initialVisibleCount = isAdminMode() ? (isMobile ? 3 : 2) : (isMobile ? 4 : 3);
-  const visibleProjects = expanded ? filteredProjects : filteredProjects.slice(0, initialVisibleCount);
+  const visibleProjects = state.expanded ? filteredProjects : filteredProjects.slice(0, initialVisibleCount);
 
   const noResultsMessage = document.querySelector(".no-results-message.project");
   const totalProjects = filteredProjects.length;
@@ -105,17 +165,22 @@ function renderProjects(projects) {
   // Handle "No Results Found"
   handleNoResults(projectsContainer, noResultsMessage, totalProjects > 0);
 
-  // Exit early if there are no projects to display
+  // Exit if no projects are found
   if (totalProjects === 0) {
-    toggleBtn.style.display = "none"; // Hide the toggle button if no results
+    toggleBtn.style.display = "none";
     return;
   }
 
-  // Update DOM
-  projectsContainer.innerHTML = ""; // Clear existing project cards
-  visibleProjects.forEach((project) => projectsContainer.appendChild(createProjectCard(project)));
+  // Clear and render only the current projects
+  projectsContainer.innerHTML = "";
+  visibleProjects.forEach((project) => {
+    if (!projectsContainer.querySelector(`[data-id="${project.id}"]`)) {
+      const card = createProjectCard(project);
+      projectsContainer.appendChild(card);
+    }
+  });
 
-  // Add "Add Project" card for admin mode
+  // Add "Add Project" card in admin mode
   if (isAdminMode()) {
     const addProjectCard = createCard({
       className: "add-project",
@@ -124,13 +189,13 @@ function renderProjects(projects) {
     projectsContainer.appendChild(addProjectCard);
   }
 
-  // Calculate total cards, including placeholders
+  // Add placeholders if needed
   const totalCards = visibleProjects.length + (isAdminMode() ? 1 : 0);
   addPlaceholderCards(projectsContainer, totalCards);
 
-  // Toggle button visibility and state
+  // Update the toggle button state
   toggleBtn.style.display = totalProjects > initialVisibleCount ? "block" : "none";
-  toggleBtn.innerHTML = expanded
+  toggleBtn.innerHTML = state.expanded
     ? '<i class="fa-solid fa-chevron-up"></i>'
     : '<i class="fa-solid fa-chevron-down"></i>';
 }
@@ -162,7 +227,7 @@ function createProjectCard(project) {
           .map(
             (tech) =>
               `<div class="tech-item" data-tech="${tech}"><i class="fab ${
-                techIcons[tech] || "fa-regular fa-code"
+                techIcons[tech] || "fa-solid fa-code"
               }"></i>${tech}</div>`
           )
           .join("")}
@@ -201,22 +266,6 @@ function createProjectCard(project) {
   return card;
 }
 
-// Trigger search when the user presses Enter
-searchInput.addEventListener(
-  "input",
-  debounce(async () => {
-    const searchTerm = searchInput.value.trim();
-
-    if (!allProjectsFetched) {
-      // Fetch all projects on the first search query
-      await fetchProjects(false, true);
-    }
-
-    // Filter and render projects from the cached data
-    renderProjects(filter(cachedProjects, searchTerm, sortSelect.value));
-  }, 300)
-);
-
 // Open project modal
 function openModal(title, project = null) {
   const modal = document.getElementById("projectModal");
@@ -241,13 +290,15 @@ document.querySelector(".cancel-btn").addEventListener("click", () => {
 // Add a new project to Firestore
 export async function addProject(projectData) {
   try {
-    const docRef = await addDoc(projectsCollection, projectData); // Add the new project to Firestore
-    const newProject = { id: docRef.id, ...projectData }; // Create a new project object with the Firestore ID
-    cachedProjects.push(newProject); // Add it to the cache
-    renderProjects(cachedProjects); // Re-render the projects
+    const docRef = await addDoc(projectsCollection, projectData);
+    const newProject = { id: docRef.id, ...projectData };
+
+    cachedProjects.push(newProject); // Add to the cache
+    localStorage.setItem("cachedProjects", JSON.stringify(cachedProjects)); // Update local storage
+    renderProjects(cachedProjects);
   } catch (error) {
     console.error("Error adding project:", error);
-    throw error; // Propagate the error for handling in the caller
+    throw error;
   }
 }
 
@@ -255,18 +306,19 @@ export async function addProject(projectData) {
 export async function updateProject(projectId, updatedData) {
   try {
     const projectDoc = doc(projectsCollection, projectId);
-    await updateDoc(projectDoc, updatedData); // Update the project in Firestore
+    await updateDoc(projectDoc, updatedData);
 
-    // Update the project in the cache
+    // Update the cached project
     const projectIndex = cachedProjects.findIndex((project) => project.id === projectId);
     if (projectIndex !== -1) {
       cachedProjects[projectIndex] = { ...cachedProjects[projectIndex], ...updatedData };
     }
 
-    renderProjects(cachedProjects); // Re-render projects with the current state of "expanded"
+    localStorage.setItem("cachedProjects", JSON.stringify(cachedProjects)); // Update local storage
+    renderProjects(cachedProjects);
   } catch (error) {
     console.error("Error updating project:", error);
-    throw error; // Propagate the error for handling in the caller
+    throw error;
   }
 }
 
@@ -274,18 +326,18 @@ export async function updateProject(projectId, updatedData) {
 export async function deleteProject(projectId) {
   try {
     const projectDoc = doc(projectsCollection, projectId);
-    await deleteDoc(projectDoc); // Delete the project in Firestore
+    await deleteDoc(projectDoc);
 
     // Remove the project from the cache
     cachedProjects = cachedProjects.filter((project) => project.id !== projectId);
 
-    renderProjects(cachedProjects); // Re-render the projects
+    localStorage.setItem("cachedProjects", JSON.stringify(cachedProjects)); // Update local storage
+    renderProjects(cachedProjects);
   } catch (error) {
     console.error("Error deleting project:", error);
-    throw error; // Propagate the error for handling in the caller
+    throw error;
   }
 }
-
 
 // Handle form submission
 document.getElementById("projectForm").addEventListener("submit", async (event) => {
@@ -318,28 +370,44 @@ document.getElementById("projectForm").addEventListener("submit", async (event) 
 
 // Toggle hidden projects
 toggleBtn.addEventListener("click", async () => {
-  expanded = !expanded;
+  saveState("expanded", !state.expanded);
 
-  if (expanded) {
-    if (!allProjectsFetched) {
-      // Only fetch more projects the first time expanded mode is activated
-      await fetchMoreProjects();
-      allProjectsFetched = true; // Mark that additional projects have been fetched
-    }
-    renderProjects(cachedProjects); // Render all projects
-  } else {
-    renderProjects(cachedProjects); // Collapse and render limited projects
+  if (state.expanded) {
+    await ensureAllProjectsFetched();
   }
+
+  renderProjects(cachedProjects);
 });
+
+// Trigger search when the user presses Enter
+searchInput.addEventListener(
+  "input",
+  debounce(async () => {
+    if (!state.allProjectsFetched) {
+      await fetchProjects(false, true);
+    }
+    updateAndRenderProjects();
+  }, 300)
+);
 
 // Sort projects
 sortSelect.addEventListener("change", async () => {
-  if (!allProjectsFetched) {
-    // Only fetch more projects the first time expanded mode is activated
-    await fetchMoreProjects();
-    allProjectsFetched = true; // Mark that additional projects have been fetched
-  }
-  renderProjects(cachedProjects); // Re-render projects with the selected sort
+  await ensureAllProjectsFetched();
+  updateAndRenderProjects();
+});
+
+// Handle tech item clicks
+document.querySelectorAll(".tech-item").forEach((techItem) => {
+  techItem.addEventListener("click", (e) => {
+    const tech = e.currentTarget.dataset.tech;
+
+    // Toggle search input value
+    searchInput.value = searchInput.value === tech ? "" : tech;
+
+    // Update and render projects
+    updateAndRenderProjects();
+    scroll("projects");
+  });
 });
 
 // Handle resize
