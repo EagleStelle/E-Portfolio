@@ -14,6 +14,7 @@
     <script src="backend/firebase.js" type="module"></script>
     <script src="backend/firestore.js" type="module"></script>
     <script src="backend/project.js" type="module"></script>
+    <script src="backend/achievement.js" type="module"></script>
     <script src="backend/auth.js" type="module"></script>
 
     <script src="script.js" type="module"></script>
@@ -66,7 +67,7 @@
 
             <!-- Right Column -->
             <div class="about-right">
-                <p class="about-biopgraphy">I'm a dedicated programmer who enjoys building applications that make a difference, whether it's desktop software I've created in my spare time or web development projects I've worked on in school.<span class="line-break"> I love figuring out efficient solutions to real problems, and I’m excited to keep learning, growing, and contributing to meaningful projects as part of a team.</span></p>
+                <p class="about-biopgraphy">I'm a dedicated programmer who enjoys building applications that make a difference, whether it's desktop software I've created in my spare time or web development projects I've worked on in school. I love figuring out efficient solutions to real problems, and I’m excited to keep contributing to meaningful projects as part of a team.</span></p>
                 <div class="about-showcase">
                     <!-- Skills Section -->
                     <h3>Skills</h3>
@@ -101,7 +102,7 @@
                             <p>HTML</p>
                         </div>
                         <div class="item">
-                            <i class="fa-brands fa-css3"></i>
+                            <i class="fa-brands fa-css3-alt"></i>
                             <p>CSS</p>
                         </div>
                         <div class="item">
@@ -163,11 +164,11 @@
                 <p>A showcase of my skills and capabilities through selected works.</p>
             </div>
             <div class="heading-controls">
-                <div class="search-box">
+                <div class="search-box project">
                     <i class="fas fa-search"></i>
                     <input type="text" placeholder="Search projects" aria-label="Search projects">
                 </div>
-                <div class="sort-box">
+                <div class="sort-box project">
                     <i class="fas fa-sort"></i>
                     <select aria-label="Sort projects">
                       <option value="default" selected>Default</option>
@@ -195,7 +196,7 @@
                     <div class="tech-item"><i class="fab fa-css3-alt"></i>CSS</div>
                     <div class="tech-item"><i class="fab fa-js-square"></i>JavaScript</div>
                 </div>
-                <a href="project-link.html" class="card-link">View Project</a>
+                <a href="project-link.html" class="card-link project">View Project</a>
             </div>
             <div class="card-item project">
                 <img src="assets/placeholder.png" alt="Project Image">
@@ -210,20 +211,19 @@
                     <div class="tech-item"><i class="fab fa-python"></i>Python</div>
                     <div class="tech-item"><i class="fab fa-java"></i>Java</div>
                 </div>
-                <a href="project-link.html" class="card-link">View Project</a>
+                <a href="project-link.html" class="card-link project">View Project</a>
             </div>
-            <!-- Add Project Placeholder Card -->
-            <div class="card-item add-project">
+            <!-- Add Project -->
+            <div class="add-item add-project">
                 <i class="fas fa-plus"></i>
                 <h3>Add Project</h3>
             </div>
         </div>
-        <button id="toggle-projects-btn" class="toggle-btn">
+        <button class="toggle-btn project">
             <i class="fa-solid fa-chevron-down"></i>
         </button>
         <div class="no-results-message project" hidden>
-            <i class="fas fa-info-circle"></i>
-            No Results Found
+            <i class="fas fa-plus-circle"></i>
         </div>
     </section>
 
@@ -235,6 +235,22 @@
                 <p>Highlights of my recognized certifications.</p>
             </div>
         </div>
+        <div class="heading-controls">
+            <div class="search-box achievement">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search projects" aria-label="Search projects">
+            </div>
+            <div class="sort-box achievement">
+                <i class="fas fa-sort"></i>
+                <select aria-label="Sort projects">
+                  <option value="default" selected>Default</option>
+                  <option value="nameAsc">Name: A to Z</option>
+                  <option value="nameDesc">Name: Z to A</option>
+                  <option value="dateAsc">Date: Newest First</option>
+                  <option value="dateDesc">Date: Oldest First</option>
+                </select>
+            </div>                  
+        </div>
         <div class="card-grid achievement">
             <!-- Example of Achievement Card -->
             <div class="card-item achievement">
@@ -245,7 +261,19 @@
                 </div>
                 <h3>Achievement Title</h3>
                 <p class="hidden-description">Brief description of the achievement.</p>
+                <a href="project-link.html" class="card-link achievement">View Project</a>
             </div>
+            <!-- Add Achievement -->
+            <div class="add-item add-achievement">
+                <i class="fas fa-plus-circle"></i>
+            </div>
+        </div>
+        <button class="toggle-btn achievement">
+            <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="no-results-message achievement" hidden>
+            <i class="fas fa-info-circle"></i>
+            No Results Found
         </div>
     </section>
 
@@ -313,34 +341,54 @@
 
     <!-- Modals -->
     <div id="projectModal" class="modal">
-        <div class="modal-content">
-            <form id="projectForm" autocomplete="off">
-                <h2>Edit Project</h2>
-                <input type="hidden" id="projectId" />
-                <input type="hidden" id="isEditMode" />
-                
-                <input type="text" id="projectTitle" placeholder="Project Title" required autocomplete="off" />
-                
-                <textarea id="projectDescription" placeholder="Brief Description" required autocomplete="off"></textarea>
-                
-                <input type="date" id="projectDate" required autocomplete="off" />
-        
-                <input type="url" id="projectImage" placeholder="Image Link" required autocomplete="off" />
-                
-                <input type="url" id="projectLink" placeholder="Project Link" required autocomplete="off" />
-                
-                <input type="text" id="projectTech" placeholder="Technologies (comma-separated)" required autocomplete="off" />
-        
-                <input type="number" id="projectPriority" placeholder="Priority (1-100)" min="1" max="100" required autocomplete="off" />
-                
-                <button type="submit">Save</button>
-                <button type="button" class="cancel-btn">Cancel</button>
-            </form>              
-        </div>        
-    </div>    
+        <form id="projectForm" autocomplete="off" class="modal-content">
+            <h2>Edit Project</h2>
+            <input type="hidden" id="projectId" />
+            <input type="hidden" id="isEditMode" />
+            
+            <input type="text" id="projectTitle" placeholder="Project Title" autocomplete="off" />
+            
+            <textarea id="projectDescription" placeholder="Brief Description" autocomplete="off"></textarea>
+            
+            <input type="date" id="projectDate" autocomplete="off" />
+    
+            <input type="url" id="projectImage" placeholder="Image Link" autocomplete="off" />
+            
+            <input type="url" id="projectLink" placeholder="Project Link" autocomplete="off" />
+            
+            <input type="text" id="projectTech" placeholder="Technologies (comma-separated)" autocomplete="off" />
+    
+            <input type="number" id="projectPriority" placeholder="Priority (1-100)" min="1" max="100" autocomplete="off" />
+            
+            <button type="submit">Save</button>
+            <button type="button" class="cancel-btn project">Cancel</button>
+        </form>
+    </div>
+    <div id="achievementModal" class="modal">
+        <form id="achievementForm" autocomplete="off" class="modal-content">
+            <h2>Edit Achievement</h2>
+            <input type="hidden" id="achievementId" />
+            <input type="hidden" id="isEditMode" />
+    
+            <input type="text" id="achievementTitle" placeholder="Achievement Title" autocomplete="off" />
+    
+            <textarea id="achievementDescription" placeholder="Brief Description" autocomplete="off"></textarea>
+
+            <input type="date" id="achievementDate" autocomplete="off" />
+
+            <input type="url" id="achievementImage" placeholder="Image Link" autocomplete="off" />
+    
+            <input type="url" id="achievementLink" placeholder="Achievement Link" autocomplete="off" />
+    
+            <input type="number" id="achievementPriority" placeholder="Priority (1-100)" min="1" max="100" autocomplete="off" />
+            
+            <button type="submit">Save</button>
+            <button type="button" class="cancel-btn achievement">Cancel</button>
+        </form>
+    </div>
 
     <!-- Popups -->
-    <div id="imagePopup" class="image-popup">
+    <div class="image-popup">
         <span class="close">&times;</span>
         <img id="popupImage" src="" alt="Popup Image">
       </div>
