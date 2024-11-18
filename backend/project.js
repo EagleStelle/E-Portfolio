@@ -1,6 +1,7 @@
 import { projectsCollection } from "./firestore.js";
 import { isAdminMode, setAdminModeChangeHandler } from "./auth.js";
 import { filter, debounce, scroll } from "./filter.js";
+import { openImagePopup } from './popup.js';
 import { 
   getOrdinalSuffix, 
   createCard, 
@@ -234,6 +235,10 @@ function createProjectCard(project) {
     </div>
     <a href="${project.link}" class="card-link" target="_blank">View Project</a>
   `;
+
+  // Add click event to the image for the popup
+  const imageElement = card.querySelector("img");
+  imageElement.addEventListener("click", () => openImagePopup(project.image));
 
   // Add click event to each tech stack item
   const techItems = card.querySelectorAll(".tech-item");
