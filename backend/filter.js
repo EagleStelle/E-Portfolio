@@ -8,14 +8,15 @@ export function debounce(func, delay) {
   };
 }
 
-// Filter projects based on search term and sort criteria
+// Filter items (projects or achievements) based on search term and sort criteria
 export function filter(items, searchTerm, sortBy) {
   let result = [...items];
 
-  // Filter by search term (in title or tech stack)
+  // Filter by search term (in title or tech stack, if available)
   if (searchTerm) {
     result = result.filter((item) => {
-      const searchIn = `${item.title} ${item.tech.join(" ")}`.toLowerCase();
+      const techStack = Array.isArray(item.tech) ? item.tech.join(" ") : ""; // Handle undefined or non-array tech
+      const searchIn = `${item.title} ${techStack}`.toLowerCase();
       return searchIn.includes(searchTerm.toLowerCase());
     });
   }
