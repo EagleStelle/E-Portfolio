@@ -5,3 +5,4 @@ import { collection } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-f
 // Firestore collections
 export const adminCollection = collection(db, "admin");
 export const projectsCollection = collection(db, "projects");
+export const achievementsCollection  = collection(db, "achievements");
