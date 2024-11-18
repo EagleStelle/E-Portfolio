@@ -7,19 +7,19 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 let adminMode = false;
-let onAdminModeChange = null; // Callback for admin mode changes
+const adminModeChangeHandlers = []; // Array to store callbacks
 
-// Set a function to handle UI updates when admin mode changes
+// Add a new admin mode change handler
 export function setAdminModeChangeHandler(callback) {
-  onAdminModeChange = callback;
+  if (typeof callback === "function") {
+    adminModeChangeHandlers.push(callback);
+  }
 }
 
-// Update admin mode and trigger UI refresh
+// Update admin mode and trigger all registered callbacks
 export function setAdminMode(isAdmin) {
   adminMode = isAdmin;
-  if (onAdminModeChange) {
-    onAdminModeChange(adminMode);
-  }
+  adminModeChangeHandlers.forEach((handler) => handler(adminMode));
 }
 
 // Get admin mode status

@@ -17,21 +17,20 @@ import {
   doc,
   query,
   orderBy,
-  limit,
   startAfter,
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 // DOM elements
-const searchInput = document.querySelector(".search-box input");
-const sortSelect = document.querySelector(".sort-box select");
+const searchInput = document.querySelector(".search-box.project input");
+const sortSelect = document.querySelector(".sort-box.project select");
 const projectsContainer = document.querySelector(".card-grid.project");
-const toggleBtn = document.getElementById("toggle-projects-btn");
+const toggleBtn = document.querySelector(".toggle-btn.project");
 let lastVisibleDoc = null; // Track the last fetched document
 
 // State variables
 let cachedProjects = []; // Projects fetched from Firestore
 const state = {
-  expanded: JSON.parse(localStorage.getItem("expandedState")) || false,
+  expandedProjects: JSON.parse(localStorage.getItem("expandedProjects")) || false,
   allProjectsFetched: JSON.parse(localStorage.getItem("allProjectsFetched")) || false,
 };
 
@@ -42,15 +41,15 @@ function saveState(key, value) {
 }
 
 // Function to handle fetching and updating states
-async function ensureAllProjectsFetched() {
+async function ensureAllFetched() {
   if (!state.allProjectsFetched) {
     await fetchMoreProjects();
     saveState("allProjectsFetched", true);
   }
 }
 
-// Function to re-render projects based on current filters
-function updateAndRenderProjects() {
+// Function to re-render based on current filters
+function updateRender() {
   const searchTerm = searchInput.value.trim();
   const sortValue = sortSelect.value;
   const filteredProjects = filter(cachedProjects, searchTerm, sortValue);
@@ -77,7 +76,7 @@ async function fetchProjects() {
   try {
       // Check if cache is expired
       if (isCacheExpired()) {
-          console.log("Cache expired. Fetching fresh data from Firestore...");
+          console.log("Cache expired. Fetching fresh data from Firestore: Projects");
 
           // Fetch fresh data from Firestore
           cachedProjects = [];
@@ -94,7 +93,7 @@ async function fetchProjects() {
           localStorage.setItem("cachedProjects", JSON.stringify(cachedProjects));
           updateLastFetchTime(); // Update the fetch timestamp
       } else {
-          console.log("Using cached data...");
+        console.log("Cache reloaded: Projects")
           // Use cached data if available
           const cachedData = localStorage.getItem("cachedProjects");
           if (cachedData) {
@@ -110,7 +109,7 @@ async function fetchProjects() {
 }
 
 async function fetchMoreProjects() {
-  console.log("Fetch Projects Collection")
+  console.log("Fetch All: Projects")
   try {
     const querySnapshot = await getDocs(
       query(
@@ -158,7 +157,7 @@ function renderProjects(projects) {
   // Determine how many projects to show
   const isMobile = window.innerWidth <= 970;
   const initialVisibleCount = isAdminMode() ? (isMobile ? 3 : 2) : (isMobile ? 4 : 3);
-  const visibleProjects = state.expanded ? filteredProjects : filteredProjects.slice(0, initialVisibleCount);
+  const visibleProjects = state.expandedProjects ? filteredProjects : filteredProjects.slice(0, initialVisibleCount);
 
   const noResultsMessage = document.querySelector(".no-results-message.project");
   const totalProjects = filteredProjects.length;
@@ -196,7 +195,7 @@ function renderProjects(projects) {
 
   // Update the toggle button state
   toggleBtn.style.display = totalProjects > initialVisibleCount ? "block" : "none";
-  toggleBtn.innerHTML = state.expanded
+  toggleBtn.innerHTML = state.expandedProjects
     ? '<i class="fa-solid fa-chevron-up"></i>'
     : '<i class="fa-solid fa-chevron-down"></i>';
 }
@@ -233,7 +232,7 @@ function createProjectCard(project) {
           )
           .join("")}
     </div>
-    <a href="${project.link}" class="card-link" target="_blank">View Project</a>
+    <a href="${project.link}" class="card-link project" target="_blank">View Project</a>
   `;
 
   // Add click event to the image for the popup
@@ -288,7 +287,7 @@ function openModal(title, project = null) {
 }
 
 // Close modal
-document.querySelector(".cancel-btn").addEventListener("click", () => {
+document.querySelector(".cancel-btn.project").addEventListener("click", () => {
   document.getElementById("projectModal").style.display = "none";
 });
 
@@ -375,10 +374,10 @@ document.getElementById("projectForm").addEventListener("submit", async (event) 
 
 // Toggle hidden projects
 toggleBtn.addEventListener("click", async () => {
-  saveState("expanded", !state.expanded);
+  saveState("expandedProjects", !state.expandedProjects);
 
-  if (state.expanded) {
-    await ensureAllProjectsFetched();
+  if (state.expandedProjects) {
+    await ensureAllFetched();
   }
 
   renderProjects(cachedProjects);
@@ -391,28 +390,14 @@ searchInput.addEventListener(
     if (!state.allProjectsFetched) {
       await fetchProjects(false, true);
     }
-    updateAndRenderProjects();
+    updateRender();
   }, 300)
 );
 
 // Sort projects
 sortSelect.addEventListener("change", async () => {
-  await ensureAllProjectsFetched();
-  updateAndRenderProjects();
-});
-
-// Handle tech item clicks
-document.querySelectorAll(".tech-item").forEach((techItem) => {
-  techItem.addEventListener("click", (e) => {
-    const tech = e.currentTarget.dataset.tech;
-
-    // Toggle search input value
-    searchInput.value = searchInput.value === tech ? "" : tech;
-
-    // Update and render projects
-    updateAndRenderProjects();
-    scroll("projects");
-  });
+  await ensureAllFetched();
+  updateRender();
 });
 
 // Handle resize

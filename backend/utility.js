@@ -18,7 +18,7 @@ export function getOrdinalSuffix(day) {
 // Create the "Add Project" card
 export function createCard({ className = "", onClick = null }) {
   const card = document.createElement("div");
-  card.className = `generic-card ${className}`.trim();
+  card.className = `add-item ${className}`.trim();
   card.innerHTML = `<i class="fas fa-plus-circle"></i>`;
   
   if (onClick && typeof onClick === "function") {

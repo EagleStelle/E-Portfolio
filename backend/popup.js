@@ -2,7 +2,7 @@
 
 // Open the image popup
 export function openImagePopup(src) {
-    const popup = document.getElementById("imagePopup");
+    const popup = document.querySelector(".image-popup");
     const popupImage = document.getElementById("popupImage");
   
     // Load the image first to check dimensions
@@ -18,7 +18,7 @@ export function openImagePopup(src) {
   
 // Close the image popup
 function closeImagePopup() {
-    const popup = document.getElementById("imagePopup");
+    const popup = document.querySelector(".image-popup");
     popup.style.display = "none";
 }
 
@@ -32,10 +32,10 @@ function adjustImageRotation(tempImage, popupImage) {
 }
 
 // Event listener for closing the popup
-document.querySelector("#imagePopup .close").addEventListener("click", closeImagePopup);
+document.querySelector(".image-popup .close").addEventListener("click", closeImagePopup);
 
 // Close popup on clicking outside the image
-document.getElementById("imagePopup").addEventListener("click", (e) => {
+document.querySelector(".image-popup").addEventListener("click", (e) => {
   if (e.target === e.currentTarget) {
     closeImagePopup();
   }
