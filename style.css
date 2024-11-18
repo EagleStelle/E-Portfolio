@@ -403,7 +403,7 @@ nav {
 .card-grid {
     display: grid;
     gap: 10px;
-    margin: 20px 0;
+    margin: 10px 0;
     align-items: start;
 }
 
@@ -537,7 +537,7 @@ nav {
 .no-results-message {
     background-color: #29425c;
     padding: 20px;
-    margin: 20px auto;
+    margin: 10px 0;
     border-radius: 8px;
     text-align: center;
     font-size: 18px;

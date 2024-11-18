@@ -206,7 +206,7 @@ function createAchievementCard(achievement) {
       <i class="fas fa-edit edit-icon" title="Edit Achievement"></i>
       <i class="fas fa-trash delete-icon" title="Delete Achievement"></i>
     </div>
-    <img src="${achievement.image || 'assets/placeholder.png'}" alt="${achievement.title || 'Achievement image'}">
+    <img src="${achievement.image || 'assets/placeholder.png'}">
     <h3>${achievement.title || "Untitled Achievement"}</h3>
     <p class="hidden-description">${achievement.description || "No description provided."}</p>
     <a href="${achievement.link}" class="card-link achievement" target="_blank">View Certificate</a>
@@ -278,6 +278,7 @@ export async function addAchievement(achievementData) {
     const newAchievement = { id: docRef.id, ...achievementData };
     
     cachedAchievements.push(newAchievement);
+    localStorage.setItem("cachedAchievements", JSON.stringify(cachedProjects)); // Update local storage
     renderAchievements(cachedAchievements);
   } catch (error) {
     console.error("Error adding achievement:", error);

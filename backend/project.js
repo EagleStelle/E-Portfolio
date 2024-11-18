@@ -205,32 +205,35 @@ function createProjectCard(project) {
   const card = document.createElement("div");
   card.className = "card-item project";
 
-  const description = project.description || "";
   const projectDate = project.date ? new Date(project.date) : null;
   const formattedDate = projectDate
-    ? `${projectDate.getDate()}${getOrdinalSuffix(
-        projectDate.getDate()
-      )} of ${projectDate.toLocaleString("default", { month: "long" })}, ${projectDate.getFullYear()}`
-    : "Date not provided";
+  ? `${projectDate.getDate()}${getOrdinalSuffix(
+    projectDate.getDate()
+  )} of ${projectDate.toLocaleString("default", { month: "long" })}, ${projectDate.getFullYear()}`
+  : `${new Date().getDate()}${getOrdinalSuffix(
+    new Date().getDate()
+  )} of ${new Date().toLocaleString("default", { month: "long" })}, ${new Date().getFullYear()}`;
 
   card.innerHTML = `
     <div class="card-icons" ${isAdminMode() ? "" : 'style="display: none;"'}>
         <i class="fas fa-edit edit-icon" title="Edit Project"></i>
         <i class="fas fa-trash delete-icon" title="Delete Project"></i>
     </div>
-    <img src="${project.image}" alt="${project.title || "Project image"}">
+    <img src="${project.image || 'assets/placeholder.png'}">
     <h3>${project.title || "Untitled Project"}</h3>
-    <p class="project-description">${description}</p>
+    <p class="project-description">${project.description || "No description provided."}</p>
     <p class="project-date">${formattedDate}</p>
     <div class="tech-stack">
-        ${project.tech
-          .map(
-            (tech) =>
-              `<div class="tech-item" data-tech="${tech}"><i class="fab ${
-                techIcons[tech] || "fa-solid fa-code"
-              }"></i>${tech}</div>`
-          )
-          .join("")}
+      ${project.tech && project.tech.length > 1
+        ? project.tech
+            .map(
+              (tech) =>
+                `<div class="tech-item" data-tech="${tech}"><i class="fab ${
+                  techIcons[tech] || "fa-solid fa-code"
+                }"></i>${tech}</div>`
+            )
+            .join("")
+        : '<div class="tech-item" data-tech="None"><i class="fa-solid fa-code"></i>None</div>'}
     </div>
     <a href="${project.link}" class="card-link project" target="_blank">View Project</a>
   `;
