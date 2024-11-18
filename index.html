@@ -58,8 +58,8 @@
                     </div>
             
                     <div class="about-btns">
-                        <button class="download-btn"><a href="#">Download CV</a></button>
-                        <button class="cta-btn"><a href="#contact">Contact Me</a></button>
+                        <a href="#"><button class="download-btn">Download CV</button></a>
+                        <a href="#contact"><button class="cta-btn">Contact Me</button></a>
                     </div>
                 </div>
             </div>                     
@@ -145,6 +145,10 @@
                             <i class="fa-solid fa-fire"></i>
                             <p>Firebase</p>
                         </div>
+                        <div class="item">
+                            <i class="fa-solid fa-database"></i>
+                            <p>MySQL</p>
+                        </div>
                     </div>
                 </div>                
             </div>
@@ -222,32 +226,6 @@
             No Results Found
         </div>
     </section>
-    <div id="projectModal" class="modal">
-        <div class="modal-content">
-            <form id="projectForm" autocomplete="off">
-                <h2>Edit Project</h2>
-                <input type="hidden" id="projectId" />
-                <input type="hidden" id="isEditMode" />
-                
-                <input type="text" id="projectTitle" placeholder="Project Title" required autocomplete="off" />
-                
-                <textarea id="projectDescription" placeholder="Brief Description" required autocomplete="off"></textarea>
-                
-                <input type="date" id="projectDate" required autocomplete="off" />
-        
-                <input type="url" id="projectImage" placeholder="Image Link" required autocomplete="off" />
-                
-                <input type="url" id="projectLink" placeholder="Project Link" required autocomplete="off" />
-                
-                <input type="text" id="projectTech" placeholder="Technologies (comma-separated)" required autocomplete="off" />
-        
-                <input type="number" id="projectPriority" placeholder="Priority (1-100)" min="1" max="100" required autocomplete="off" />
-                
-                <button type="submit">Save</button>
-                <button type="button" class="cancel-btn">Cancel</button>
-            </form>              
-        </div>        
-    </div>    
 
     <!-- Achievements/Certifications Section -->
     <section id="achievements">
@@ -332,6 +310,34 @@
             <button type="button" id="sendMessageBtn">Send Message</button>
         </form>        
     </section>
+
+    <!-- Modals -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <form id="projectForm" autocomplete="off">
+                <h2>Edit Project</h2>
+                <input type="hidden" id="projectId" />
+                <input type="hidden" id="isEditMode" />
+                
+                <input type="text" id="projectTitle" placeholder="Project Title" required autocomplete="off" />
+                
+                <textarea id="projectDescription" placeholder="Brief Description" required autocomplete="off"></textarea>
+                
+                <input type="date" id="projectDate" required autocomplete="off" />
+        
+                <input type="url" id="projectImage" placeholder="Image Link" required autocomplete="off" />
+                
+                <input type="url" id="projectLink" placeholder="Project Link" required autocomplete="off" />
+                
+                <input type="text" id="projectTech" placeholder="Technologies (comma-separated)" required autocomplete="off" />
+        
+                <input type="number" id="projectPriority" placeholder="Priority (1-100)" min="1" max="100" required autocomplete="off" />
+                
+                <button type="submit">Save</button>
+                <button type="button" class="cancel-btn">Cancel</button>
+            </form>              
+        </div>        
+    </div>    
 
     <footer>
         <p>&copy; 2024 Valentino Pasno. All Rights Reserved.</p>

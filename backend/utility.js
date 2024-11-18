@@ -32,7 +32,7 @@ export function createCard({ className = "", onClick = null }) {
 export const techIcons = {
   HTML: "fa-html5",
   PHP: "fa-php",
-  JavaScript: "fa-js",
+  JS: "fa-js",
   CSS: "fa-css3-alt",
   Python: "fa-python",
   Java: "fa-java",

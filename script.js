@@ -107,6 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Initialize and start cycling
         cycleItems(); // Show the first batch initially
-        setInterval(cycleItems, 5000); // Cycle every 5 seconds
+        setInterval(cycleItems, 3000); // Cycle every 3 seconds
     });
 });

@@ -229,6 +229,7 @@ nav {
 }
 
 .sort-box select {
+    flex: 1;
     border: none;
     outline: none;
     background-color: #29425c;
@@ -316,13 +317,17 @@ nav {
     padding: 0 5em;
 }
 
+.about-btns button {
+    padding: 0.4em 1em;
+}
+
 .about-btns a {
     color: #fff;
     text-decoration: none;
 }
 
-.about-btns button {
-    padding: 0.4em 1em;
+.about-btns a:hover {
+    color: black;
 }
 
 .download-btn {
@@ -455,7 +460,6 @@ nav {
 
 .project-description {
     text-align: justify;
-    margin: 5px 0;
 }
 
 .project-date {
