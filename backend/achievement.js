@@ -146,38 +146,34 @@ async function fetchMoreAchievements() {
 
 // Render achievements
 function renderAchievements(achievements) {
-    const searchTerm = searchInput.value.trim();
-    const sortBy = sortSelect.value;
-  
-    // Filter and sort achievements
-    const filteredAchievements = filter(achievements, searchTerm, sortBy);
-  
-    // Determine how many achievements to show
-    const isMobile = window.innerWidth <= 970;
-    const initialVisibleCount = isAdminMode() ? (isMobile ? 3 : 2) : (isMobile ? 4 : 3);
-    const visibleAchievements = state.expanded ? filteredAchievements : filteredAchievements.slice(0, initialVisibleCount);
-  
-    const noResultsMessage = document.querySelector(".no-results-message.achievement");
-    const totalAchievements = filteredAchievements.length;
-  
-    // Handle "No Results Found"
-    handleNoResults(achievementsContainer, noResultsMessage, totalAchievements > 0);
-  
-    if (totalAchievements === 0) {
-      toggleBtn.style.display = "none";
-      return;
-    }
-  
-    // Clear and render only the current achievements
-    achievementsContainer.innerHTML = "";
-    visibleAchievements.forEach((achievement) => {
-      if (!achievementsContainer.querySelector(`[data-id="${achievement.id}"]`)) {
-        const card = createAchievementCard(achievement);
-        achievementsContainer.appendChild(card);
-      }
-    });
-  
-    // Add "Add Achievement" card in admin mode
+  const searchTerm = searchInput.value.trim();
+  const sortBy = sortSelect.value;
+
+  // Determine if search/filter is active
+  const isSearchActive = !!searchTerm || sortBy !== "default";
+
+  // Filter and sort achievements
+  const filteredAchievements = filter(achievements, searchTerm, sortBy);
+
+  // Determine how many achievements to show
+  const isMobile = window.innerWidth <= 970;
+  const initialVisibleCount = isAdminMode() ? (isMobile ? 3 : 2) : (isMobile ? 4 : 3);
+  const visibleAchievements = state.expandedAchievements ? filteredAchievements : filteredAchievements.slice(0, initialVisibleCount);
+
+  const noResultsMessage = document.querySelector(".no-results-message.achievement");
+  const totalAchievements = filteredAchievements.length;
+
+  // Show "No Results Found" message only if search is active and no results
+  const shouldShowMessage = isSearchActive && totalAchievements === 0;
+
+  // Handle "No Results Found" visibility
+  handleNoResults(achievementsContainer, noResultsMessage, shouldShowMessage);
+
+  // Clear container regardless of results
+  achievementsContainer.innerHTML = "";
+
+  if (totalAchievements === 0) {
+    // Add placeholders and admin card even when no data is fetched
     if (isAdminMode()) {
       const addAchievementCard = createCard({
         className: "add-achievement",
@@ -185,16 +181,38 @@ function renderAchievements(achievements) {
       });
       achievementsContainer.appendChild(addAchievementCard);
     }
-  
-    // Add placeholders if needed
-    const totalCards = visibleAchievements.length + (isAdminMode() ? 1 : 0);
-    addPlaceholderCards(achievementsContainer, totalCards);
-  
-    toggleBtn.style.display = totalAchievements > initialVisibleCount ? "block" : "none";
-    toggleBtn.innerHTML = state.expanded
-      ? '<i class="fa-solid fa-chevron-up"></i>'
-      : '<i class="fa-solid fa-chevron-down"></i>';
-}  
+
+    addPlaceholderCards(achievementsContainer, 0); // Ensure minimum placeholders are added
+    toggleBtn.style.display = "none";
+    return;
+  }
+
+  // Render only the current achievements
+  visibleAchievements.forEach((achievement) => {
+    if (!achievementsContainer.querySelector(`[data-id="${achievement.id}"]`)) {
+      const card = createAchievementCard(achievement);
+      achievementsContainer.appendChild(card);
+    }
+  });
+
+  // Add "Add Achievement" card in admin mode
+  if (isAdminMode()) {
+    const addAchievementCard = createCard({
+      className: "add-achievement",
+      onClick: () => openModal("Add Achievement"),
+    });
+    achievementsContainer.appendChild(addAchievementCard);
+  }
+
+  // Add placeholders if needed
+  const totalCards = visibleAchievements.length + (isAdminMode() ? 1 : 0);
+  addPlaceholderCards(achievementsContainer, totalCards);
+
+  toggleBtn.style.display = totalAchievements > initialVisibleCount ? "block" : "none";
+  toggleBtn.innerHTML = state.expandedAchievements
+    ? '<i class="fa-solid fa-chevron-up"></i>'
+    : '<i class="fa-solid fa-chevron-down"></i>';
+}
 
 // Create an achievement card
 function createAchievementCard(achievement) {
@@ -278,7 +296,7 @@ export async function addAchievement(achievementData) {
     const newAchievement = { id: docRef.id, ...achievementData };
     
     cachedAchievements.push(newAchievement);
-    localStorage.setItem("cachedAchievements", JSON.stringify(cachedProjects)); // Update local storage
+    localStorage.setItem("cachedAchievements", JSON.stringify(cachedAchievements)); // Update local storage
     renderAchievements(cachedAchievements);
   } catch (error) {
     console.error("Error adding achievement:", error);

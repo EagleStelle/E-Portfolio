@@ -43,13 +43,13 @@ export const techIcons = {
   "WinUI 3": "fa-microsoft",
 };
 
-export function handleNoResults(container, messageElement, hasResults) {
-  if (hasResults) {
-    messageElement.hidden = true;
-    container.style.display = "grid";
-  } else {
+export function handleNoResults(container, messageElement, shouldShowMessage) {
+  if (shouldShowMessage) {
     messageElement.hidden = false;
     container.style.display = "none";
+  } else {
+    messageElement.hidden = true;
+    container.style.display = "grid";
   }
 }
 

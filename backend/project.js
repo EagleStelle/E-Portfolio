@@ -151,6 +151,9 @@ function renderProjects(projects) {
   const searchTerm = searchInput.value.trim();
   const sortBy = sortSelect.value;
 
+  // Determine if search/filter is active
+  const isSearchActive = !!searchTerm || sortBy !== "default";
+
   // Filter and sort projects
   const filteredProjects = filter(projects, searchTerm, sortBy);
 
@@ -162,17 +165,31 @@ function renderProjects(projects) {
   const noResultsMessage = document.querySelector(".no-results-message.project");
   const totalProjects = filteredProjects.length;
 
-  // Handle "No Results Found"
-  handleNoResults(projectsContainer, noResultsMessage, totalProjects > 0);
+  // Show "No Results Found" message only if search is active and no results
+  const shouldShowMessage = isSearchActive && totalProjects === 0;
 
-  // Exit if no projects are found
+  // Handle "No Results Found" visibility
+  handleNoResults(projectsContainer, noResultsMessage, shouldShowMessage);
+
+  // Clear container regardless of results
+  projectsContainer.innerHTML = "";
+
   if (totalProjects === 0) {
+    // Add placeholders and admin card even when no data is fetched
+    if (isAdminMode()) {
+      const addProjectCard = createCard({
+        className: "add-project",
+        onClick: () => openModal("Add Project"),
+      });
+      projectsContainer.appendChild(addProjectCard);
+    }
+
+    addPlaceholderCards(projectsContainer, 0); // Ensure minimum placeholders are added
     toggleBtn.style.display = "none";
     return;
   }
 
-  // Clear and render only the current projects
-  projectsContainer.innerHTML = "";
+  // Render only the current projects
   visibleProjects.forEach((project) => {
     if (!projectsContainer.querySelector(`[data-id="${project.id}"]`)) {
       const card = createProjectCard(project);

@@ -404,7 +404,9 @@ nav {
     display: grid;
     gap: 10px;
     margin: 10px 0;
-    align-items: start;
+    align-items: stretch; /* Ensures items stretch to fill the row height */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-auto-rows: minmax(450px, auto); /* Sets a minimum row height */
 }
 
 .card-grid.project {
@@ -698,9 +700,8 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 50vh;
     border: 2px dashed rgba(30, 144, 255, 0.4);
-    height: 100%;
+    height: auto;
     transition: background-color 0.3s, transform 0.3s;
 }
 
