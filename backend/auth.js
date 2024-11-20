@@ -1,8 +1,9 @@
 // auth.js
-import { adminCollection } from "./firestore.js";
+import { adminCollection, messagesCollection } from "./firestore.js";
 import {
   query,
   where,
+  addDoc,
   getDocs,
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
@@ -50,20 +51,48 @@ export async function verifyCredentials(name, email, secret) {
   }
 }
 
+// Function to "send" message by saving it to the Firestore database
+async function pseudoSendMessage(data) {
+  const timestamp = new Date().toISOString();
+
+  const newMessage = {
+    ...data,
+    timestamp,
+  };
+
+  // Save the message to the "messages" collection
+  await addDoc(messagesCollection, newMessage);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const sendMessageBtn = document.getElementById("sendMessageBtn");
   const contactForm = document.getElementById("contactForm");
 
-  sendMessageBtn.addEventListener("click", () => {
+  sendMessageBtn.addEventListener("click", async () => {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
+    const company = document.getElementById("company").value.trim();
+    const subject = document.getElementById("subject").value.trim();
     const message = document.getElementById("message").value.trim();
+
+    // Validate required fields
+    if (!name || !email || !message) {
+      alert("Please fill out all required fields (Name, Email, Subject, and Message) before sending.");
+      return;
+    }
 
     if (message === "enable_admin") {
       verifyCredentials(name, email, message);
-    } else {
-      alert("Regular message sent!");
       contactForm.reset();
+    } else {
+      try {
+        await pseudoSendMessage({ name, email, company, subject, message });
+        alert("Your message has been sent successfully!");
+        contactForm.reset();
+      } catch (error) {
+        console.error("Error sending message:", error);
+        alert("There was an issue sending your message. Please try again later.");
+      }
     }
   });
 });
