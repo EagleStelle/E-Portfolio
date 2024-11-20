@@ -404,23 +404,23 @@ nav {
     display: grid;
     gap: 10px;
     margin: 10px 0;
-    align-items: stretch; /* Ensures items stretch to fill the row height */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    grid-auto-rows: minmax(450px, auto); /* Sets a minimum row height */
+    align-items: stretch;
 }
 
 .card-grid.project {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-auto-rows: minmax(450px, auto);
 }
 
 .card-grid.achievement {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-auto-rows: minmax(250px, auto);
 }
 
 .card-item {
     background: #29425c;
     color: #e0e1dd;
-    padding: 20px;
+    padding: 0.938rem;
     box-sizing: border-box;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     border-radius: 5px;
@@ -436,22 +436,28 @@ nav {
     transition: transform 0.3s ease;
 }
 
-.card-item:hover .card-icons,
+.stack-item:hover .card-icons,
 .card-item:hover .card-icons {
     opacity: 1;
 }
 
+.stack-container img,
 .card-grid img {
     width: 100%;
-    aspect-ratio: 16 / 9;
     object-fit: cover;
     border-radius: 5px;
+    cursor: pointer;
 }
 
 .card-grid h3 {
     font-size: 20px;
     margin: 5px 0;
     word-wrap: break-word;
+}
+
+.card-grid h4 {
+    text-align: center;
+    margin-top: 5px;
 }
 
 .project-description {
@@ -536,6 +542,21 @@ nav {
     transform: scale(1.1);
 }
 
+.hidden-description {
+    max-height: 0;
+    opacity: 0;
+    color: #e0e1dd;
+    text-align: justify;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.card-item:hover .hidden-description,
+.stack-item:hover .hidden-description {
+    max-height: 1000px;
+    opacity: 1;
+    margin: 5px 0;
+}
+
 .no-results-message {
     background-color: #29425c;
     padding: 20px;
@@ -548,7 +569,11 @@ nav {
     justify-content: space-between;
     gap: 10px;
 }
-  
+
+.toggle-btn {
+    font-size: 32px;
+}
+
 /* Experience & Education Stacks */
 .stack-container {
     display: flex;
@@ -557,33 +582,49 @@ nav {
     padding: 10px 0;
 }
 
+.stack-container h3 {
+    font-weight: normal;
+}
+
+.stack-container h4 {
+    font-weight: normal;
+}
+
 .stack-item {
     background: #29425c;
     color: #e0e1dd;
-    padding: 20px;
+    padding: 15px;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     transition: transform 0.3s ease, background-color 0.3s, color 0.3s;
     width: 100%;
 }
 
-/* Hover effect for each stack item */
 .stack-item:hover {
     transform: scale(1.01);
 }
 
-/* Hide details initially */
-.details {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
+.stack-wrapper {
+    display: flex;
+    align-items: stretch; /* Ensures equal height between image and content */
+    gap: 20px;
 }
 
-/* Show details on hover */
-.stack-item:hover .details {
-    max-height: 100px;
-    opacity: 1;
+.stack-image {
+    width: 100px; /* Fixed size for PC */
+    height: 100px; /* Fixed size for PC */
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.stack-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image fits inside without distortion */
+}
+
+.stack-text {
+    flex: 1;
 }
 
 /* Contact Section */
@@ -687,10 +728,9 @@ footer {
     background-color: #ffca3a; /* Slightly darker yellow when hovered */
 }
 
-/* Hide Scrollbar in Mobile Mode */
 @media screen and (max-width: 768px) {
     ::-webkit-scrollbar {
-        display: none; /* For Chrome, Safari, and Edge */
+        width: 3px;
     }
 }
 
@@ -701,6 +741,7 @@ footer {
     justify-content: center;
     align-items: center;
     border: 2px dashed rgba(30, 144, 255, 0.4);
+    min-height: 130px;
     height: auto;
     transition: background-color 0.3s, transform 0.3s;
 }
@@ -768,8 +809,8 @@ footer {
 }
   
 .image-popup img {
-    max-width: 90%; /* Ensure the image doesn’t take full width */
-    max-height: 90%; /* Ensure the image doesn’t take full height */
+    max-width: 100%; /* Ensure the image doesn’t take full width */
+    max-height: 100%; /* Ensure the image doesn’t take full height */
     border-radius: 10px; /* Slightly rounded corners for aesthetic */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
   }

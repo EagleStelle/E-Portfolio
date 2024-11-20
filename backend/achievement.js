@@ -74,7 +74,7 @@ async function fetchAchievements() {
   try {
       // Check if cache is expired
       if (isCacheExpired()) {
-          console.log("Cache expired. Fetching fresh data from Firestore...");
+          console.log("Cache expired. Fetching fresh data from Firestore: Achievements");
 
           // Fetch fresh data from Firestore
           cachedAchievements = [];
@@ -157,7 +157,7 @@ function renderAchievements(achievements) {
 
   // Determine how many achievements to show
   const isMobile = window.innerWidth <= 970;
-  const initialVisibleCount = isAdminMode() ? (isMobile ? 3 : 2) : (isMobile ? 4 : 3);
+  const initialVisibleCount = isAdminMode() ? (isMobile ? 4 : 3) : (isMobile ? 5 : 4);
   const visibleAchievements = state.expandedAchievements ? filteredAchievements : filteredAchievements.slice(0, initialVisibleCount);
 
   const noResultsMessage = document.querySelector(".no-results-message.achievement");
@@ -206,7 +206,7 @@ function renderAchievements(achievements) {
 
   // Add placeholders if needed
   const totalCards = visibleAchievements.length + (isAdminMode() ? 1 : 0);
-  addPlaceholderCards(achievementsContainer, totalCards);
+  addPlaceholderCards(achievementsContainer, totalCards, 4);
 
   toggleBtn.style.display = totalAchievements > initialVisibleCount ? "block" : "none";
   toggleBtn.innerHTML = state.expandedAchievements
@@ -225,10 +225,13 @@ function createAchievementCard(achievement) {
       <i class="fas fa-trash delete-icon" title="Delete Achievement"></i>
     </div>
     <img src="${achievement.image || 'assets/placeholder.png'}">
-    <h3>${achievement.title || "Untitled Achievement"}</h3>
+    <h4>${achievement.title || "Untitled Certification"}</h4>
     <p class="hidden-description">${achievement.description || "No description provided."}</p>
-    <a href="${achievement.link}" class="card-link achievement" target="_blank">View Certificate</a>
   `;
+
+  // Add click event to the image for the popup
+  const imageElement = card.querySelector("img");
+  imageElement.addEventListener("click", () => openImagePopup(achievement.image || 'assets/placeholder.png'));
 
   if (isAdminMode()) {
     card.querySelector(".edit-icon").addEventListener("click", () => openModal("Edit Achievement", achievement));
@@ -253,7 +256,6 @@ function openModal(title, achievement = null) {
   document.getElementById("achievementDescription").value = achievement?.description || "";
   document.getElementById("achievementDate").value = achievement?.date || "";
   document.getElementById("achievementImage").value = achievement?.image || "";
-  document.getElementById("achievementLink").value = achievement?.link || "";
   document.getElementById("achievementPriority").value = achievement?.priority || "";
 }
 
@@ -271,8 +273,8 @@ document.getElementById("achievementForm").addEventListener("submit", async (eve
     title: document.getElementById("achievementTitle").value,
     description: document.getElementById("achievementDescription").value,
     image: document.getElementById("achievementImage").value,
-    link: document.getElementById("achievementLink").value,
     priority: parseInt(document.getElementById("achievementPriority").value, 10),
+    date: document.getElementById("achievementDate").value,
   };
 
   try {

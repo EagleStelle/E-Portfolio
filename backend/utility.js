@@ -57,7 +57,7 @@ export function addPlaceholderCards(container, totalCards, minCards = 3) {
   const placeholdersNeeded = Math.max(0, minCards - totalCards);
   for (let i = 0; i < placeholdersNeeded; i++) {
     const placeholderCard = document.createElement("div");
-    placeholderCard.className = "project-card invisible-card";
+    placeholderCard.className = "invisible-card";
     container.appendChild(placeholderCard);
   }
 }

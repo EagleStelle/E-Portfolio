@@ -221,7 +221,7 @@ function renderProjects(projects) {
 function createProjectCard(project) {
   const card = document.createElement("div");
   card.className = "card-item project";
-
+  
   const projectDate = project.date ? new Date(project.date) : null;
   const formattedDate = projectDate
   ? `${projectDate.getDate()}${getOrdinalSuffix(
@@ -257,7 +257,7 @@ function createProjectCard(project) {
 
   // Add click event to the image for the popup
   const imageElement = card.querySelector("img");
-  imageElement.addEventListener("click", () => openImagePopup(project.image));
+  imageElement.addEventListener("click", () => openImagePopup(project.image || 'assets/placeholder.png'));
 
   // Add click event to each tech stack item
   const techItems = card.querySelectorAll(".tech-item");

@@ -4,7 +4,6 @@
 export function openImagePopup(src) {
     const popup = document.querySelector(".image-popup");
     const popupImage = document.getElementById("popupImage");
-  
     // Load the image first to check dimensions
     const tempImage = new Image();
     tempImage.onload = () => {
