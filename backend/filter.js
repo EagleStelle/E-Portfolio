@@ -16,7 +16,7 @@ export function filter(items, searchTerm, sortBy) {
   if (searchTerm) {
     result = result.filter((item) => {
       const techStack = Array.isArray(item.tech) ? item.tech.join(" ") : ""; // Handle undefined or non-array tech
-      const searchIn = `${item.title} ${techStack}`.toLowerCase();
+      const searchIn = `${item.title} ${item.description} ${techStack}`.toLowerCase();
       return searchIn.includes(searchTerm.toLowerCase());
     });
   }
