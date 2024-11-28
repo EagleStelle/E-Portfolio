@@ -550,7 +550,7 @@ nav {
     transition: max-height 0.3s ease, opacity 0.3s ease;
 }
 
-.card-item:hover .hidden-description,
+.card-item img:hover ~ .hidden-description,
 .stack-item:hover .hidden-description {
     max-height: 1000px;
     opacity: 1;
